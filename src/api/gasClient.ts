@@ -11,10 +11,10 @@ function getToken(): string | null {
 
 async function post<T = any>(payload: Record<string, any>): Promise<T> {
   const token = getToken();
-  const res = await axios.post(GAS_URL, {
+  const res = await axios.post(GAS_URL, JSON.stringify({
     ...payload,
     token: payload.token ?? token ?? undefined
-  });
+  }), { headers: { 'Content-Type': 'text/plain' } });
   return res.data;
 }
 
