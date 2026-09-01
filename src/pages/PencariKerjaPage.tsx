@@ -44,9 +44,10 @@ export default function PencariKerjaPage() {
         try {
           const res = await gasApi.create('PencariKerja', record);
           if (res.success) success++;
-          else failed++;
-        } catch {
+          else { failed++; console.error('Import gagal:', record.nama, res.error); }
+        } catch (err: any) {
           failed++;
+          console.error('Import error:', record.nama, err);
         }
       }
 
