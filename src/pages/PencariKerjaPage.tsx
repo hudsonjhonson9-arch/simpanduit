@@ -22,6 +22,8 @@ export default function PencariKerjaPage() {
       let success = 0;
       let failed = 0;
 
+      let errorMsgs: string[] = [];
+
       for (const r of rows) {
         const record: Record<string, string> = {
           nama: String((r as any)['Nama Lengkap'] || (r as any)['Nama'] || ''),
@@ -44,14 +46,19 @@ export default function PencariKerjaPage() {
         try {
           const res = await gasApi.create('PencariKerja', record);
           if (res.success) success++;
-          else { failed++; console.error('Import gagal:', record.nama, res.error); }
+          else {
+            failed++;
+            const err = res.error || 'unknown error';
+            if (errorMsgs.length < 3) errorMsgs.push(`${record.nama}: ${err}`);
+          }
         } catch (err: any) {
           failed++;
-          console.error('Import error:', record.nama, err);
+          if (errorMsgs.length < 3) errorMsgs.push(`${record.nama}: ${err.message || err}`);
         }
       }
 
-      toast(`Import selesai: ${success} berhasil, ${failed} gagal.`, success > 0 ? 'success' : 'error');
+      const detail = errorMsgs.length > 0 ? '\n' + errorMsgs.join('\n') : '';
+      toast(`Import: ${success} berhasil, ${failed} gagal.${detail}`, success > 0 ? 'success' : 'error');
     } catch (err: any) {
       toast('Gagal membaca file Excel: ' + (err.message || err), 'error');
     } finally {
