@@ -31,9 +31,15 @@ export default function CrudTable({ module, title, fields, headerExtra }: Props)
 
   async function load() {
     setLoading(true);
-    const res = await gasApi.list(module);
-    if (res.success) setRecords(res.data);
-    setLoading(false);
+    try {
+      const res = await gasApi.list(module);
+      if (res.success) setRecords(res.data);
+      else if (res.error) toast(res.error, 'error');
+    } catch {
+      // ponytail: silent fail on load — user sees empty table
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, [module]);
@@ -52,10 +58,12 @@ export default function CrudTable({ module, title, fields, headerExtra }: Props)
     setSaving(true);
     try {
       if (editing === 'new') {
-        await gasApi.create(module, form);
+        const res = await gasApi.create(module, form);
+        if (!res.success) throw new Error(res.error || 'Gagal menyimpan data');
         toast('Data berhasil ditambahkan', 'success');
       } else {
-        await gasApi.update(module, editing, form);
+        const res = await gasApi.update(module, editing, form);
+        if (!res.success) throw new Error(res.error || 'Gagal memperbarui data');
         toast('Data berhasil diperbarui', 'success');
       }
       setEditing(null);
@@ -71,7 +79,8 @@ export default function CrudTable({ module, title, fields, headerExtra }: Props)
   async function remove(id: string) {
     if (!confirm('Hapus data ini?')) return;
     try {
-      await gasApi.remove(module, id);
+      const res = await gasApi.remove(module, id);
+      if (!res.success) throw new Error(res.error || 'Gagal menghapus data');
       toast('Data berhasil dihapus', 'success');
       load();
     } catch (err: any) {

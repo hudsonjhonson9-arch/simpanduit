@@ -31,9 +31,7 @@ async function gasRequest<T = any>(payload: Record<string, any>): Promise<T> {
   if (fullPayload.filters) params.set('filters', JSON.stringify(fullPayload.filters));
 
   const url = `${GAS_URL}?${params.toString()}`;
-  console.log('[GAS REQUEST]', fullPayload.action, fullPayload.module || '');
   const res = await axios.get(url);
-  console.log('[GAS RESPONSE]', JSON.stringify(res.data).substring(0, 200));
   return res.data;
 }
 
