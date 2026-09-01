@@ -15,9 +15,10 @@ interface Props {
   module: Module;
   title: string;
   fields: Field[];
+  headerExtra?: React.ReactNode;
 }
 
-export default function CrudTable({ module, title, fields }: Props) {
+export default function CrudTable({ module, title, fields, headerExtra }: Props) {
   const { user } = useAuth();
   const { toast } = useToast();
   const readOnly = !canWrite(user?.role, module);
@@ -86,7 +87,10 @@ export default function CrudTable({ module, title, fields }: Props) {
     <div className="page">
       <div className="toolbar">
         <h2>{title}</h2>
-        {!readOnly && <button onClick={startCreate} style={{ padding: '10px 20px' }}>+ Tambah Data</button>}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {headerExtra}
+          {!readOnly && <button onClick={startCreate} style={{ padding: '10px 20px' }}>+ Tambah Data</button>}
+        </div>
       </div>
 
       {readOnly && (
