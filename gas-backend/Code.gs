@@ -12,13 +12,13 @@
  *  - Sessions     : token, user_id, username, role, created_at, expires_at
  */
 
-const SPREADSHEET_ID = 'GANTI_DENGAN_ID_SPREADSHEET_ANDA';
+const SPREADSHEET_ID = '1JSKrQxembEDcpCqr17YQ9YIqv5nEyxvQ9Cw1PNG5nmM';
 const SESSION_TTL_HOURS = 12;
 
 const SHEET_SCHEMAS = {
   Users: ['id', 'username', 'password', 'nama', 'role', 'created_at'],
-  PencariKerja: ['id', 'nama', 'kecamatan', 'desa', 'pendidikan', 'jenis_kelamin', 'umur', 'minat_kerja', 'minat_pelatihan', 'pengalaman', 'created_at'],
-  DUDI: ['id', 'nama_perusahaan', 'bidang_usaha', 'lokasi', 'kontak_hrd', 'produk', 'jumlah_kebutuhan', 'kompetensi_dibutuhkan', 'persyaratan', 'created_at'],
+  PencariKerja: ['id', 'nama', 'kecamatan', 'desa', 'pendidikan', 'jenis_kelamin', 'umur', 'status', 'minat_kerja', 'minat_pelatihan', 'pengalaman', 'keterampilan', 'pelatihan_pernah_diikuti', 'kesediaan_pelatihan', 'created_at'],
+  DUDI: ['id', 'nama_perusahaan', 'bidang_usaha', 'lokasi', 'kontak_hrd', 'produk', 'jumlah_kebutuhan', 'kompetensi_dibutuhkan', 'persyaratan', 'pendidikan', 'pengalaman', 'created_at'],
   AKAD: ['id', 'nama_perusahaan', 'lowongan', 'persyaratan', 'lokasi_kerja', 'cara_melamar', 'jadwal_rekrutmen', 'status', 'created_at'],
   AKAN: ['id', 'nama_p3mi', 'negara_tujuan', 'jabatan', 'gaji', 'persyaratan', 'dokumen', 'tahapan', 'kontak', 'created_at'],
   KarirHub: ['id', 'judul_lowongan', 'kompetensi', 'perusahaan', 'lokasi', 'deadline', 'created_at'],
@@ -33,6 +33,38 @@ const PROTECTED_MODULES = ['Users', 'PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'Kar
 const BOBOT_DUDI = 0.4;
 const BOBOT_LOWONGAN = 0.3;
 const BOBOT_MINAT = 0.3;
+
+// Kelompok posisi — 6 divisi sesuai metodologi SIMATA DUIT
+const KELOMPOK_POSISI = {
+  'Sewing': ['jahit', 'sewing', 'penjahit', 'operator jahit', 'operator mesin jahit'],
+  'Cutting': ['potong', 'cutting', 'pemotong', 'operator cutting', 'pemotongan'],
+  'Assembly Sepatu': ['lasting', 'sole', 'upper', 'assembly', 'perakitan', 'assembly sepatu'],
+  'QC': ['qc', 'quality control', 'pemeriksa kualitas'],
+  'Finishing': ['finishing', 'packing', 'penyelesaian', 'finishing & packing'],
+  'Pattern': ['pola', 'pattern', 'pembuat pola', 'pattern maker']
+};
+
+const JENJANG_PENDIDIKAN = ['Tidak Sekolah', 'SD', 'SMP', 'SMA/SMK', 'SMK', 'D3', 'D1/D3', 'S1', 'S2'];
+
+function getJenjangIndex(pendidikan) {
+  const p = String(pendidikan || '').trim().toUpperCase();
+  if (p === 'TIDAK SEKOLAH' || p === '') return -1;
+  if (p === 'D1/D3' || p === 'D3' || p === 'D1') return 5;
+  if (p === 'SMA/SMK' || p === 'SMK' || p === 'SMA') return 4;
+  const idx = JENJANG_PENDIDIKAN.findIndex(j => j.toUpperCase() === p);
+  return idx >= 0 ? idx : -1;
+}
+
+function getKelompokPosisi(input) {
+  const lower = String(input || '').trim().toLowerCase();
+  if (!lower) return null;
+  for (const [kelompok, keywords] of Object.entries(KELOMPOK_POSISI)) {
+    for (const kw of keywords) {
+      if (lower.includes(kw)) return kelompok;
+    }
+  }
+  return null;
+}
 
 // ---------- ENTRY POINTS ----------
 
@@ -78,6 +110,12 @@ function handleRequest(e) {
       const session = validateSession(body.token || params.token);
       if (!session.success) return jsonResponse({ success: false, error: 'Sesi tidak valid, silakan login ulang.' });
       return jsonResponse(dashboardAnalisis());
+    }
+
+    if (action === 'analisisKesesuaian') {
+      const session = validateSession(body.token || params.token);
+      if (!session.success) return jsonResponse({ success: false, error: 'Sesi tidak valid, silakan login ulang.' });
+      return jsonResponse(analisisKesesuaian(body.kecamatan));
     }
 
     // Semua aksi CRUD generik: create / read / update / delete
@@ -476,6 +514,121 @@ function dashboardAnalisis() {
       totalLowongan: karirhub.length + akad.length
     }
   };
+}
+
+// ---------- ANALISIS KESESUAIAN ----------
+
+function analisisKesesuaian(kecamatan) {
+  const filterKecamatan = kecamatan && kecamatan !== 'Semua' ? kecamatan : null;
+
+  const dudi = getSheetData('DUDI');
+  let pencariKerja = getSheetData('PencariKerja');
+  if (filterKecamatan) {
+    pencariKerja = pencariKerja.filter(p => p.kecamatan === filterKecamatan);
+  }
+
+  // Group DUDI by kelompok posisi
+  const dudiByKelompok = {};
+  dudi.forEach(d => {
+    const bidang = String(d.bidang_usaha || '').trim();
+    const produk = String(d.produk || '').trim();
+    const kelompok = getKelompokPosisi(bidang) || getKelompokPosisi(produk);
+    if (!kelompok) return;
+
+    if (!dudiByKelompok[kelompok]) {
+      dudiByKelompok[kelompok] = { kuota: 0, kompetensiSet: new Set(), pendidikan: '', pengalaman: '' };
+    }
+    const entry = dudiByKelompok[kelompok];
+    entry.kuota += Number(d.jumlah_kebutuhan) || 1;
+    String(d.kompetensi_dibutuhkan || '').split(',').forEach(k => {
+      const kk = k.trim().toLowerCase();
+      if (kk) entry.kompetensiSet.add(kk);
+    });
+    if (d.pendidikan && !entry.pendidikan) entry.pendidikan = d.pendidikan;
+    if (d.pengalaman && !entry.pengalaman) entry.pengalaman = d.pengalaman;
+  });
+
+  // Group PencariKerja by kelompok posisi (from minat_kerja or minat_pelatihan)
+  const pkByKelompok = {};
+  pencariKerja.forEach(p => {
+    const minat = String(p.minat_kerja || p.minat_pelatihan || '').trim();
+    const kelompok = getKelompokPosisi(minat);
+    if (!kelompok) return;
+
+    if (!pkByKelompok[kelompok]) pkByKelompok[kelompok] = [];
+    pkByKelompok[kelompok].push(p);
+  });
+
+  // Compute per kelompok
+  const allKelompok = Object.keys(KELOMPOK_POSISI);
+  const results = allKelompok.map((kelompok, idx) => {
+    const dudiInfo = dudiByKelompok[kelompok] || { kuota: 0, kompetensiSet: new Set(), pendidikan: '', pengalaman: '' };
+    const pks = pkByKelompok[kelompok] || [];
+
+    let jumlahSesuai = 0;
+    let jumlahBelumSesuai = 0;
+    const gapKompetensi = new Set(dudiInfo.kompetensiSet);
+
+    pks.forEach(p => {
+      let matchCount = 0;
+
+      // Cek kompetensi
+      const skillStr = String(p.keterampilan || p.minat_pelatihan || '').toLowerCase();
+      const skills = skillStr.split(',').map(s => s.trim()).filter(Boolean);
+      const hasSkill = skills.some(s => dudiInfo.kompetensiSet.has(s));
+      if (hasSkill) {
+        matchCount++;
+        skills.forEach(s => gapKompetensi.delete(s));
+      }
+
+      // Cek pendidikan
+      const pdkMasyarakat = getJenjangIndex(p.pendidikan);
+      const pdkIndustri = getJenjangIndex(dudiInfo.pendidikan);
+      if (pdkMasyarakat >= 0 && pdkIndustri >= 0 && pdkMasyarakat >= pdkIndustri) {
+        matchCount++;
+      } else if (pdkIndustri < 0) {
+        matchCount++; // industri tidak syaratkan pendidikan
+      }
+
+      // Cek pengalaman (sederhana: ada = cocok)
+      if (p.pengalaman && String(p.pengalaman).trim()) {
+        matchCount++;
+      } else if (!dudiInfo.pengalaman) {
+        matchCount++; // industri tidak syaratkan pengalaman
+      }
+
+      if (matchCount >= 2) jumlahSesuai++;
+      else jumlahBelumSesuai++;
+    });
+
+    const total = jumlahSesuai + jumlahBelumSesuai;
+    const persentase = total > 0 ? Math.round((jumlahSesuai / total) * 100) : 0;
+
+    // Prioritas
+    let prioritas;
+    if (persentase >= 70 && dudiInfo.kuota > 0) prioritas = 'Tinggi';
+    else if (persentase >= 40 || dudiInfo.kuota > 100) prioritas = 'Sedang';
+    else prioritas = 'Rendah';
+
+    return {
+      peringkat: 0, // will be assigned after sort
+      kelompok: kelompok,
+      kuota: dudiInfo.kuota,
+      minat: total,
+      minat_persen: total > 0 ? Math.round((total / pencariKerja.length) * 100) : 0,
+      jumlah_sesuai: jumlahSesuai,
+      jumlah_belum_sesuai: jumlahBelumSesuai,
+      persentase: persentase,
+      gap_kompetensi: Array.from(gapKompetensi).join(', ') || '-',
+      prioritas: prioritas,
+      kecamatan: kecamatan || 'Semua'
+    };
+  }).filter(r => r.kuota > 0 || r.minat > 0)
+    .sort((a, b) => b.persentase - a.persentase || b.kuota - a.kuota);
+
+  results.forEach((r, i) => r.peringkat = i + 1);
+
+  return { success: true, kecamatan: kecamatan || 'Semua', data: results };
 }
 
 // ---------- HELPERS ----------

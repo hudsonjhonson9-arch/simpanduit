@@ -13,7 +13,9 @@ export default function DudiPage() {
         { key: 'produk', label: 'Produk' },
         { key: 'jumlah_kebutuhan', label: 'Jumlah Kebutuhan Tenaga Kerja', type: 'number' },
         { key: 'kompetensi_dibutuhkan', label: 'Kompetensi Dibutuhkan' },
-        { key: 'persyaratan', label: 'Persyaratan' }
+        { key: 'persyaratan', label: 'Persyaratan' },
+        { key: 'pendidikan', label: 'Pendidikan', type: 'select', options: ['SD', 'SMP', 'SMA/SMK', 'D3', 'S1'] },
+        { key: 'pengalaman', label: 'Pengalaman' }
       ]}
     />
   );

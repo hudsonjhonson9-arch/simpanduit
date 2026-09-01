@@ -46,5 +46,8 @@ export const gasApi = {
     post({ action: 'petaSebaran' }),
 
   dashboardAnalisis: () =>
-    post({ action: 'dashboardAnalisis' })
+    post({ action: 'dashboardAnalisis' }),
+
+  analisisKesesuaian: (kecamatan?: string) =>
+    post({ action: 'analisisKesesuaian', kecamatan })
 };

@@ -16,6 +16,7 @@ import RekomendasiPage from './pages/RekomendasiPage';
 import PetaSebaranPage from './pages/PetaSebaranPage';
 import DashboardPage from './pages/DashboardPage';
 import LaporanPage from './pages/LaporanPage';
+import GapKompetensiPage from './pages/GapKompetensiPage';
 
 function guarded(element: React.ReactNode) {
   return <RoleGuard>{element}</RoleGuard>;
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="peta-sebaran" element={guarded(<PetaSebaranPage />)} />
             <Route path="dashboard" element={guarded(<DashboardPage />)} />
             <Route path="laporan" element={guarded(<LaporanPage />)} />
+            <Route path="gap-kompetensi" element={guarded(<GapKompetensiPage />)} />
           </Route>
         </Routes>
       </AuthProvider>

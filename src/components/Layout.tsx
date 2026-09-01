@@ -13,6 +13,7 @@ const menu = [
   { to: '/identifikasi', label: '⭐ Identifikasi Kebutuhan' },
   { to: '/rekomendasi', label: '⭐ Rekomendasi Pelatihan' },
   { to: '/peta-sebaran', label: '⭐ Peta Sebaran Kebutuhan' },
+  { to: '/gap-kompetensi', label: '⭐ Gap Kompetensi' },
   { to: '/dashboard', label: 'Dashboard Analisis' },
   { to: '/laporan', label: 'Laporan' },
 ];
