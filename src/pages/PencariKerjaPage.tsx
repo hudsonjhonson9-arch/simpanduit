@@ -23,6 +23,7 @@ export default function PencariKerjaPage() {
       let failed = 0;
 
       let errorMsgs: string[] = [];
+      let rawDebug = '';
 
       for (const r of rows) {
         const record: Record<string, string> = {
@@ -43,23 +44,28 @@ export default function PencariKerjaPage() {
 
         if (!record.nama) { failed++; continue; }
 
+        // Only log first record for debugging
+        if (success + failed === 0) {
+          rawDebug = JSON.stringify({ action: 'create', module: 'PencariKerja', data: record, token: '(exists)' });
+        }
+
         try {
           const res = await gasApi.create('PencariKerja', record);
           if (res.success) success++;
           else {
             failed++;
-            const err = res.error || 'unknown error';
+            const err = res.error || JSON.stringify(res);
             if (errorMsgs.length < 3) errorMsgs.push(`${record.nama}: ${err}`);
           }
         } catch (err: any) {
           failed++;
-          const msg = err?.response?.data?.error || err?.message || String(err);
+          const msg = err?.response?.data?.error || err?.response?.data || err?.message || String(err);
           if (errorMsgs.length < 3) errorMsgs.push(`${record.nama}: ${msg}`);
         }
       }
 
-      const detail = errorMsgs.length > 0 ? '\n' + errorMsgs.join('\n') : '';
-      toast(`Import: ${success} berhasil, ${failed} gagal.${detail}`, success > 0 ? 'success' : 'error');
+      const detail = errorMsgs.length > 0 ? errorMsgs.join(' | ') : '';
+      toast(`Import: ${success} OK, ${failed} gagal. ${detail}`, success > 0 ? 'success' : 'error');
     } catch (err: any) {
       toast('Gagal membaca file Excel: ' + (err.message || err), 'error');
     } finally {

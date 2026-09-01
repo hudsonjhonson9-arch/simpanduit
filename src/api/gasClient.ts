@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Ganti dengan URL deployment Web App Google Apps Script Anda
 const GAS_URL = import.meta.env.VITE_GAS_URL as string;
 
 export type Module = 'Users' | 'PencariKerja' | 'DUDI' | 'AKAD' | 'AKAN' | 'KarirHub' | 'RekomendasiPelatihan';
@@ -9,45 +8,65 @@ function getToken(): string | null {
   return localStorage.getItem('simpanduit_token');
 }
 
-async function post<T = any>(payload: Record<string, any>): Promise<T> {
+/**
+ * ponytail: GAS web app redirects strip POST body.
+ * Use GET + URL params — they survive redirects.
+ * Data payload is JSON-encoded into a single param.
+ */
+async function gasRequest<T = any>(payload: Record<string, any>): Promise<T> {
   const token = getToken();
-  const res = await axios.post(GAS_URL, JSON.stringify({
+  const fullPayload = {
     ...payload,
     token: payload.token ?? token ?? undefined
-  }), { headers: { 'Content-Type': 'text/plain' } });
+  };
+  const params = new URLSearchParams();
+  params.set('action', fullPayload.action || '');
+  if (fullPayload.module) params.set('module', fullPayload.module);
+  if (fullPayload.token) params.set('token', fullPayload.token);
+  if (fullPayload.id) params.set('id', fullPayload.id);
+  if (fullPayload.username) params.set('username', fullPayload.username);
+  if (fullPayload.password) params.set('password', fullPayload.password);
+  if (fullPayload.kecamatan) params.set('kecamatan', fullPayload.kecamatan);
+  if (fullPayload.data) params.set('data', JSON.stringify(fullPayload.data));
+  if (fullPayload.filters) params.set('filters', JSON.stringify(fullPayload.filters));
+
+  const url = `${GAS_URL}?${params.toString()}`;
+  console.log('[GAS REQUEST]', fullPayload.action, fullPayload.module || '');
+  const res = await axios.get(url);
+  console.log('[GAS RESPONSE]', JSON.stringify(res.data).substring(0, 200));
   return res.data;
 }
 
 export const gasApi = {
   login: (username: string, password: string) =>
-    post({ action: 'login', username, password }),
+    gasRequest({ action: 'login', username, password }),
 
-  logout: () => post({ action: 'logout' }),
+  logout: () => gasRequest({ action: 'logout' }),
 
   list: (module: Module, filters?: Record<string, string>) =>
-    post({ action: 'read', module, filters }),
+    gasRequest({ action: 'read', module, filters }),
 
   create: (module: Module, data: Record<string, any>) =>
-    post({ action: 'create', module, data }),
+    gasRequest({ action: 'create', module, data }),
 
   update: (module: Module, id: string, data: Record<string, any>) =>
-    post({ action: 'update', module, id, data }),
+    gasRequest({ action: 'update', module, id, data }),
 
   remove: (module: Module, id: string) =>
-    post({ action: 'delete', module, id }),
+    gasRequest({ action: 'delete', module, id }),
 
   identifikasiKebutuhan: (kecamatan?: string) =>
-    post({ action: 'identifikasiKebutuhan', kecamatan }),
+    gasRequest({ action: 'identifikasiKebutuhan', kecamatan }),
 
   listKecamatan: () =>
-    post({ action: 'listKecamatan' }),
+    gasRequest({ action: 'listKecamatan' }),
 
   petaSebaran: () =>
-    post({ action: 'petaSebaran' }),
+    gasRequest({ action: 'petaSebaran' }),
 
   dashboardAnalisis: () =>
-    post({ action: 'dashboardAnalisis' }),
+    gasRequest({ action: 'dashboardAnalisis' }),
 
   analisisKesesuaian: (kecamatan?: string) =>
-    post({ action: 'analisisKesesuaian', kecamatan })
+    gasRequest({ action: 'analisisKesesuaian', kecamatan })
 };

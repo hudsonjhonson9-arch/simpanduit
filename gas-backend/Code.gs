@@ -79,7 +79,26 @@ function doPost(e) {
 function handleRequest(e) {
   try {
     const params = e.parameter || {};
-    const body = e.postData && e.postData.contents ? JSON.parse(e.postData.contents) : {};
+    // Read body from POST data or from URL-encoded 'data' param
+    let body = {};
+    try {
+      if (e.postData && e.postData.contents) {
+        body = JSON.parse(e.postData.contents);
+      }
+    } catch (_) { /* ignore */ }
+    // Merge URL params into body (URL params take precedence for routing)
+    if (params.data) {
+      try { Object.assign(body, JSON.parse(params.data)); } catch (_) { /* ignore */ }
+    }
+    if (params.module) body.module = params.module;
+    if (params.id) body.id = params.id;
+    if (params.username) body.username = params.username;
+    if (params.password) body.password = params.password;
+    if (params.kecamatan) body.kecamatan = params.kecamatan;
+    if (params.token) body.token = params.token;
+    if (params.filters) {
+      try { body.filters = JSON.parse(params.filters); } catch (_) { /* ignore */ }
+    }
     const action = params.action || body.action;
 
     if (!action) return jsonResponse({ success: false, error: 'Parameter action wajib diisi.' });
