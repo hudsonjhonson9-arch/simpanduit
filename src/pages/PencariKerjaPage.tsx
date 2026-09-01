@@ -53,7 +53,8 @@ export default function PencariKerjaPage() {
           }
         } catch (err: any) {
           failed++;
-          if (errorMsgs.length < 3) errorMsgs.push(`${record.nama}: ${err.message || err}`);
+          const msg = err?.response?.data?.error || err?.message || String(err);
+          if (errorMsgs.length < 3) errorMsgs.push(`${record.nama}: ${msg}`);
         }
       }
 
