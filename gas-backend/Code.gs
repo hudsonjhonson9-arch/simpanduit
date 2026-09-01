@@ -658,6 +658,14 @@ function getSheet(name) {
   if (!sheet) {
     sheet = ss.insertSheet(name);
     sheet.appendRow(SHEET_SCHEMAS[name]);
+    return sheet;
+  }
+  // Add missing headers to existing sheets
+  const existing = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+  const needed = SHEET_SCHEMAS[name];
+  const missing = needed.filter(h => !existing.includes(h));
+  if (missing.length > 0) {
+    sheet.getRange(1, sheet.getLastColumn() + 1, 1, missing.length).setValues([missing]);
   }
   return sheet;
 }

@@ -23,7 +23,6 @@ export default function PencariKerjaPage() {
       let failed = 0;
 
       let errorMsgs: string[] = [];
-      let rawDebug = '';
 
       for (const r of rows) {
         const record: Record<string, string> = {
@@ -43,11 +42,6 @@ export default function PencariKerjaPage() {
         };
 
         if (!record.nama) { failed++; continue; }
-
-        // Only log first record for debugging
-        if (success + failed === 0) {
-          rawDebug = JSON.stringify({ action: 'create', module: 'PencariKerja', data: record, token: '(exists)' });
-        }
 
         try {
           const res = await gasApi.create('PencariKerja', record);

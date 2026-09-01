@@ -15,7 +15,7 @@ function getToken(): string | null {
  */
 async function gasRequest<T = any>(payload: Record<string, any>): Promise<T> {
   const token = getToken();
-  const fullPayload = {
+  const fullPayload: Record<string, any> = {
     ...payload,
     token: payload.token ?? token ?? undefined
   };
