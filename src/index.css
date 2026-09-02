@@ -508,4 +508,12 @@ tbody tr:hover { background: var(--primary-light); }
   80% { transform: translateX(4px); }
 }
 
+.custom-marker {
+  background: none !important;
+  border: none !important;
+}
+.custom-marker div {
+  box-sizing: border-box;
+}
+
 

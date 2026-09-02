@@ -29,15 +29,15 @@ const KEC_COORDS: Record<string, [number, number]> = {
 
 function makeIcon(count: number, max: number): L.DivIcon {
   const ratio = max > 0 ? count / max : 0;
-  const size = 24 + ratio * 24;
+  const size = 32 + ratio * 16;
   const color = ratio > 0.6 ? '#dc2626' : ratio > 0.3 ? '#d97706' : '#059669';
   return L.divIcon({
-    className: '',
+    className: 'custom-marker',
     html: `<div style="
       width:${size}px;height:${size}px;border-radius:50%;
-      background:${color};border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);
+      background:${color};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4);
       display:flex;align-items:center;justify-content:center;
-      color:#fff;font-weight:700;font-size:${size > 36 ? 13 : 11}px;
+      color:#fff;font-weight:700;font-size:12px;
     ">${count}</div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
