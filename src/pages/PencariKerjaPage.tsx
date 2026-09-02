@@ -17,7 +17,13 @@ export default function PencariKerjaPage() {
     try {
       const data = await file.arrayBuffer();
       const wb = XLSX.read(data);
-      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+      const raw = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+      // Trim trailing/leading spaces from all keys
+      const rows = raw.map((r: any) => {
+        const trimmed: any = {};
+        Object.keys(r).forEach(k => { trimmed[k.trim()] = r[k]; });
+        return trimmed;
+      });
 
       let success = 0;
       let failed = 0;
@@ -26,19 +32,19 @@ export default function PencariKerjaPage() {
 
       for (const r of rows) {
         const record: Record<string, string> = {
-          nama: String((r as any)['Nama Lengkap'] || (r as any)['Nama'] || ''),
-          umur: String((r as any)['Usia'] || (r as any)['Umur'] || ''),
+          nama: String((r as any)['Nama Lengkap'] || ''),
+          umur: String((r as any)['Usia'] || ''),
+          jenis_kelamin: String((r as any)['Jenis Kelamin'] || ''),
           kecamatan: String((r as any)['Kecamatan'] || ''),
-          pendidikan: String((r as any)['Pendidikan'] || ''),
-          status: String((r as any)['Status'] || ''),
-          minat_kerja: String((r as any)['Minat'] || (r as any)['Minat Kerja'] || ''),
-          minat_pelatihan: String((r as any)['Minat'] || (r as any)['Minat Kerja'] || ''),
-          jenis_kelamin: 'Perempuan',
-          desa: String((r as any)['Desa'] || ''),
-          pengalaman: String((r as any)['Pengalaman'] || ''),
-          keterampilan: String((r as any)['Keterampilan'] || ''),
-          pelatihan_pernah_diikuti: String((r as any)['Pelatihan'] || (r as any)['Pelatihan Pernah Diikuti'] || ''),
-          kesediaan_pelatihan: String((r as any)['Kesediaan'] || (r as any)['Kesediaan Pelatihan'] || 'Ya')
+          desa: String((r as any)['Kelurahan/Desa'] || ''),
+          pendidikan: String((r as any)['Pendidikan Terakhir'] || ''),
+          status: String((r as any)['Status Pekerjaan Saat Ini'] || ''),
+          minat_kerja: String((r as any)['Bidang pekerjaan apa yang paling Anda minati?'] || (r as any)['Posisi pekerjaan apa yang paling Anda minati?'] || ''),
+          minat_pelatihan: String((r as any)['Posisi pekerjaan apa yang paling Anda minati?'] || (r as any)['Bidang pekerjaan apa yang paling Anda minati?'] || ''),
+          pengalaman: '',
+          keterampilan: String((r as any)['Keterampilan apa yang sudah Anda miliki?'] || ''),
+          pelatihan_pernah_diikuti: String((r as any)['Pelatihan kerja apa yang pernah Anda ikuti?'] || (r as any)['Pernah mengikuti Pelatihan'] || ''),
+          kesediaan_pelatihan: String((r as any)['Apakah Anda bersedia mengikuti pelatihan untuk memenuhi persyaratan lowongan tersebut?'] || 'Ya')
         };
 
         if (!record.nama) { failed++; continue; }
