@@ -62,12 +62,13 @@ function Legend() {
     const LegendControl = L.Control.extend({
       onAdd: function () {
         const div = L.DomUtil.create('div', '');
+        div.style.cssText = 'min-width:160px';
         div.innerHTML = `
-          <div style="background:rgba(255,255,255,.92);padding:8px 12px;border-radius:8px;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.2);line-height:1.8">
-            <div style="font-weight:600;margin-bottom:2px">Jumlah Pencari Kerja</div>
-            <div><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#059669;margin-right:4px;vertical-align:middle"></span> Rendah</div>
-            <div><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d97706;margin-right:4px;vertical-align:middle"></span> Sedang</div>
-            <div><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#dc2626;margin-right:4px;vertical-align:middle"></span> Tinggi</div>
+          <div style="background:#fff;padding:10px 14px;border-radius:8px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.25);line-height:2;color:#1a1a1a;border:1px solid #ddd">
+            <div style="font-weight:700;margin-bottom:4px;font-size:13px">Jumlah Pencari Kerja</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#059669;flex-shrink:0"></span> Rendah</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#d97706;flex-shrink:0"></span> Sedang</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#dc2626;flex-shrink:0"></span> Tinggi</div>
           </div>`;
         return div;
       }
