@@ -86,7 +86,7 @@ function handleRequest(e) {
     } catch (_) { /* ignore */ }
     // Merge URL params into body (URL params take precedence for routing)
     if (params.data) {
-      try { Object.assign(body, JSON.parse(params.data)); } catch (_) { /* ignore */ }
+      try { body.data = JSON.parse(params.data); } catch (_) { /* ignore */ }
     }
     if (params.module) body.module = params.module;
     if (params.id) body.id = params.id;
