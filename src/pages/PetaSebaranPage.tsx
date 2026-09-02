@@ -1,8 +1,40 @@
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { useEffect, useState, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { gasApi } from '../api/gasClient';
+
+const KEC_NAMES = ['Kota Waikabubak', 'Loli', 'Tana Righu', 'Lamboya', 'Wanokaka', 'Laboya Barat'] as const;
+
+const KEC_FILE: Record<string, string> = {
+  'Kota Waikabubak': 'Kota_Waikabubak',
+  'Loli': 'Loli',
+  'Tana Righu': 'Tana_Righu',
+  'Lamboya': 'Lamboya',
+  'Wanokaka': 'Wanokaka',
+  'Laboya Barat': 'Laboya_Barat',
+};
+
+const KEC_STYLES: Record<string, { color: string; fillColor: string }> = {
+  'Kota Waikabubak': { color: '#2563eb', fillColor: '#2563eb' },
+  'Loli': { color: '#7c3aed', fillColor: '#7c3aed' },
+  'Tana Righu': { color: '#059669', fillColor: '#059669' },
+  'Lamboya': { color: '#d97706', fillColor: '#d97706' },
+  'Wanokaka': { color: '#dc2626', fillColor: '#dc2626' },
+  'Laboya Barat': { color: '#0891b2', fillColor: '#0891b2' },
+};
+
+async function fetchGeoJSON(): Promise<Record<string, GeoJSON.FeatureCollection>> {
+  const entries = await Promise.all(
+    KEC_NAMES.map(async (name) => {
+      const file = KEC_FILE[name];
+      const res = await fetch(`/data/geojson/${file}.geojson`);
+      const data = await res.json() as GeoJSON.FeatureCollection;
+      return [name, data] as const;
+    })
+  );
+  return Object.fromEntries(entries);
+}
 
 interface MinatItem {
   kompetensi: string;
@@ -82,13 +114,15 @@ function Legend() {
 
 export default function PetaSebaranPage() {
   const [data, setData] = useState<KecamatanData[]>([]);
+  const [geojsonData, setGeojsonData] = useState<Record<string, GeoJSON.FeatureCollection>>({});
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'jumlah' | 'minat' | 'pelatihan'>('jumlah');
 
   async function load() {
     setLoading(true);
-    const res = await gasApi.petaSebaran();
+    const [res, geo] = await Promise.all([gasApi.petaSebaran(), fetchGeoJSON()]);
     if (res.success) setData(res.data);
+    setGeojsonData(geo);
     setLoading(false);
   }
 
@@ -139,6 +173,25 @@ export default function PetaSebaranPage() {
               />
               <FitBounds data={data} />
               <Legend />
+              {data.map(d => {
+                const geojson = geojsonData[d.kecamatan];
+                const style = KEC_STYLES[d.kecamatan];
+                if (!geojson || !style) return null;
+                const count = d.total;
+                const opacity = 0.15 + (count / maxTotal) * 0.35;
+                return (
+                  <GeoJSON
+                    key={d.kecamatan}
+                    data={geojson}
+                    style={{
+                      color: style.color,
+                      weight: 2,
+                      fillColor: style.fillColor,
+                      fillOpacity: opacity,
+                    }}
+                  />
+                );
+              })}
               {data.map(d => {
                 const coords = KEC_COORDS[d.kecamatan];
                 if (!coords) return null;
