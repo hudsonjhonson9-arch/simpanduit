@@ -4,16 +4,15 @@
  *
  * Struktur Spreadsheet (nama sheet harus persis sama):
  *  - Users        : id, username, password, nama, role, created_at
- *  - PencariKerja : id, nama, kecamatan, desa, pendidikan, jenis_kelamin, umur, minat_kerja, minat_pelatihan, pengalaman, created_at
+ *  - PencariKerja : id, nama, kecamatan, desa, pendidikan, jenis_kelamin, umur, status, minat_kerja, minat_pelatihan, pengalaman, keterampilan, pelatihan_pernah_diikuti, kesediaan_pelatihan, created_at
  *  - DUDI         : id, nama_perusahaan, bidang_usaha, lokasi, kontak_hrd, produk, jumlah_kebutuhan, kompetensi_dibutuhkan, persyaratan, created_at
  *  - AKAD         : id, nama_perusahaan, lowongan, persyaratan, lokasi_kerja, cara_melamar, jadwal_rekrutmen, status, created_at
  *  - AKAN         : id, nama_p3mi, negara_tujuan, jabatan, gaji, persyaratan, dokumen, tahapan, kontak, created_at
  *  - KarirHub     : id, judul_lowongan, kompetensi, perusahaan, lokasi, deadline, created_at
- *  - Sessions     : token, user_id, username, role, created_at, expires_at
  */
 
 const SPREADSHEET_ID = '1JSKrQxembEDcpCqr17YQ9YIqv5nEyxvQ9Cw1PNG5nmM';
-const SESSION_TTL_HOURS = 12;
+const TOKEN_SECRET = 'simpanduit-v1'; // ponytail: hardcoded secret, ganti kalau perlu
 
 const SHEET_SCHEMAS = {
   Users: ['id', 'username', 'password', 'nama', 'role', 'created_at'],
@@ -22,7 +21,6 @@ const SHEET_SCHEMAS = {
   AKAD: ['id', 'nama_perusahaan', 'lowongan', 'persyaratan', 'lokasi_kerja', 'cara_melamar', 'jadwal_rekrutmen', 'status', 'created_at'],
   AKAN: ['id', 'nama_p3mi', 'negara_tujuan', 'jabatan', 'gaji', 'persyaratan', 'dokumen', 'tahapan', 'kontak', 'created_at'],
   KarirHub: ['id', 'judul_lowongan', 'kompetensi', 'perusahaan', 'lokasi', 'deadline', 'created_at'],
-  Sessions: ['token', 'user_id', 'username', 'role', 'created_at', 'expires_at'],
   RekomendasiPelatihan: ['id', 'kompetensi', 'kecamatan', 'jumlah_dudi_butuh', 'jumlah_lowongan', 'jumlah_minat', 'skor_total', 'prioritas', 'alasan', 'created_at']
 };
 
@@ -104,7 +102,7 @@ function handleRequest(e) {
     if (!action) return jsonResponse({ success: false, error: 'Parameter action wajib diisi.' });
 
     if (action === 'login') return jsonResponse(handleLogin(body));
-    if (action === 'logout') return jsonResponse(handleLogout(body));
+    if (action === 'logout') return jsonResponse(handleLogout());
     if (action === 'validateSession') return jsonResponse(validateSession(body.token));
 
     if (action === 'identifikasiKebutuhan') {
@@ -191,19 +189,7 @@ function handleLogin(body) {
   const user = users.find(u => u.username === username && u.password === hashPassword(password));
   if (!user) return { success: false, error: 'Username atau password salah.' };
 
-  const token = Utilities.getUuid();
-  const now = new Date();
-  const expires = new Date(now.getTime() + SESSION_TTL_HOURS * 60 * 60 * 1000);
-
-  appendRow('Sessions', {
-    token: token,
-    user_id: user.id,
-    username: user.username,
-    role: user.role,
-    created_at: now.toISOString(),
-    expires_at: expires.toISOString()
-  });
-
+  const token = generateToken(user);
   return {
     success: true,
     token: token,
@@ -211,31 +197,40 @@ function handleLogin(body) {
   };
 }
 
-function handleLogout(body) {
-  const sheet = getSheet('Sessions');
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const tokenCol = headers.indexOf('token');
-
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][tokenCol] === body.token) {
-      sheet.deleteRow(i + 1);
-      return { success: true };
-    }
-  }
+function handleLogout() {
   return { success: true };
+}
+
+function generateToken(user) {
+  const payload = user.id + '|' + user.username + '|' + user.role;
+  const sig = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, payload + TOKEN_SECRET);
+  const hex = sig.map(b => (b < 0 ? b + 256 : b).toString(16).padStart(2, '0')).join('');
+  return Utilities.base64Encode(payload + '|' + hex);
 }
 
 function validateSession(token) {
   if (!token) return { success: false, error: 'Token tidak ada.' };
-  const sessions = getSheetData('Sessions');
-  const session = sessions.find(s => s.token === token);
-  if (!session) return { success: false, error: 'Sesi tidak ditemukan.' };
+  try {
+    const decoded = Utilities.newBlob(Utilities.base64Decode(token)).getDataAsString();
+    const parts = decoded.split('|');
+    if (parts.length !== 4) return { success: false, error: 'Token tidak valid.' };
 
-  if (new Date(session.expires_at) < new Date()) {
-    return { success: false, error: 'Sesi kedaluwarsa.' };
+    const [userId, username, role, hex] = parts;
+    const payload = userId + '|' + username + '|' + role;
+    const expectedSig = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, payload + TOKEN_SECRET);
+    const expectedHex = expectedSig.map(b => (b < 0 ? b + 256 : b).toString(16).padStart(2, '0')).join('');
+
+    if (hex !== expectedHex) return { success: false, error: 'Token tidak valid.' };
+
+    // Verify user still exists
+    const users = getSheetData('Users');
+    const user = users.find(u => u.id === userId);
+    if (!user) return { success: false, error: 'User tidak ditemukan.' };
+
+    return { success: true, session: { user_id: userId, username: username, role: role } };
+  } catch (_) {
+    return { success: false, error: 'Token tidak valid.' };
   }
-  return { success: true, session: session };
 }
 
 function hashPassword(password) {
