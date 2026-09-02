@@ -56,6 +56,29 @@ function FitBounds({ data }: { data: KecamatanData[] }) {
   return null;
 }
 
+function Legend() {
+  const map = useMap();
+  useEffect(() => {
+    const LegendControl = L.Control.extend({
+      onAdd: function () {
+        const div = L.DomUtil.create('div', '');
+        div.innerHTML = `
+          <div style="background:rgba(255,255,255,.92);padding:8px 12px;border-radius:8px;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.2);line-height:1.8">
+            <div style="font-weight:600;margin-bottom:2px">Jumlah Pencari Kerja</div>
+            <div><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#059669;margin-right:4px;vertical-align:middle"></span> Rendah</div>
+            <div><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d97706;margin-right:4px;vertical-align:middle"></span> Sedang</div>
+            <div><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#dc2626;margin-right:4px;vertical-align:middle"></span> Tinggi</div>
+          </div>`;
+        return div;
+      }
+    });
+    const control = new LegendControl({ position: 'bottomright' });
+    control.addTo(map);
+    return () => { control.remove(); };
+  }, [map]);
+  return null;
+}
+
 export default function PetaSebaranPage() {
   const [data, setData] = useState<KecamatanData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,6 +137,7 @@ export default function PetaSebaranPage() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               <FitBounds data={data} />
+              <Legend />
               {data.map(d => {
                 const coords = KEC_COORDS[d.kecamatan];
                 if (!coords) return null;
@@ -141,13 +165,6 @@ export default function PetaSebaranPage() {
                 );
               })}
             </MapContainer>
-          </div>
-
-          {/* Legend */}
-          <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
-            <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#059669', marginRight: 4 }} /> Rendah</span>
-            <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#d97706', marginRight: 4 }} /> Sedang</span>
-            <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#dc2626', marginRight: 4 }} /> Tinggi</span>
           </div>
 
           {/* Detail cards */}
