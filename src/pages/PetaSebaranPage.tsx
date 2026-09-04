@@ -120,9 +120,9 @@ export default function PetaSebaranPage() {
 
   async function load() {
     setLoading(true);
-    const [res, geo] = await Promise.all([gasApi.petaSebaran(), fetchGeoJSON()]);
-    if (res.success) setData(res.data);
-    setGeojsonData(geo);
+    const [resGeo, resData] = await Promise.allSettled([fetchGeoJSON(), gasApi.petaSebaran()]);
+    if (resGeo.status === 'fulfilled') setGeojsonData(resGeo.value);
+    if (resData.status === 'fulfilled' && resData.value.success) setData(resData.value.data);
     setLoading(false);
   }
 
