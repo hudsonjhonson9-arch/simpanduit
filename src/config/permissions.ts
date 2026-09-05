@@ -11,8 +11,8 @@ export const MENU_ACCESS: Record<Role, string[]> = {
 
 /** Modul yang boleh ditulis (tambah/edit/hapus) oleh masing-masing role. Harus sinkron dengan WRITE_PERMISSIONS di Code.gs. */
 export const WRITE_PERMISSIONS: Record<Role, Module[]> = {
-  Admin: ['Users', 'PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub', 'RekomendasiPelatihan'],
-  Operator: ['PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub'],
+  Admin: ['Users', 'PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub', 'RekomendasiPelatihan', 'InfoPelatihan'],
+  Operator: ['PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub', 'InfoPelatihan'],
   'Kepala Bidang': [],
   Mentor: []
 };
