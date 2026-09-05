@@ -183,7 +183,7 @@ export default function PetaSebaranPage() {
                 const geojson = geojsonData[name];
                 const style = KEC_STYLES[name];
                 if (!geojson || !style) return null;
-                const kecData = data.find(d => d.kecamatan === name);
+                const kecData = data.find(d => d.kecamatan === name || d.kecamatan === `Kec. ${name}` || d.kecamatan.replace(/^Kec\.\s*/, '') === name);
                 const count = kecData?.total ?? 0;
                 const opacity = count > 0 ? 0.15 + (count / maxTotal) * 0.35 : 0.08;
                 const minatList = (kecData?.minat ?? []).slice(0, 3).map(m =>
@@ -227,7 +227,8 @@ export default function PetaSebaranPage() {
                 );
               })}
               {data.map(d => {
-                const coords = KEC_COORDS[d.kecamatan];
+                const kecKey = d.kecamatan.replace(/^Kec\.\s*/, '');
+                const coords = KEC_COORDS[kecKey];
                 if (!coords) return null;
                 return (
                   <Marker key={d.kecamatan} position={coords} icon={makeIcon(d.total, maxTotal)}>
