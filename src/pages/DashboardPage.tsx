@@ -53,6 +53,11 @@ export default function DashboardPage() {
     { name: 'Perempuan', value: data.gender.perempuan }
   ];
 
+  const distribusiUsia = data.distribusiUsia ?? [];
+  const statusPekerjaan = data.statusPekerjaan ?? [];
+  const pendidikan = data.pendidikan ?? [];
+  const lamaranMasuk = data.lamaranMasuk ?? [];
+
   return (
     <div className="page">
       <h2>Dashboard Analisis</h2>
@@ -71,7 +76,7 @@ export default function DashboardPage() {
           <div className="stat-label">Total Lowongan</div>
         </div>
         <div className="card-stat">
-          <div className="stat-value">{data.totalLamaran ?? 0}</div>
+          <div className="stat-value">{data.totalLamaran || 0}</div>
           <div className="stat-label">Total Lamaran</div>
         </div>
       </div>
@@ -139,7 +144,7 @@ export default function DashboardPage() {
 
         <ChartCard title="Distribusi Usia Pencari Kerja">
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={data.distribusiUsia} margin={{ bottom: 40 }}>
+            <BarChart data={distribusiUsia} margin={{ bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
               <YAxis allowDecimals={false} />
@@ -151,7 +156,7 @@ export default function DashboardPage() {
 
         <ChartCard title="Status Pekerjaan">
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={data.statusPekerjaan} layout="vertical" margin={{ left: 60 }}>
+            <BarChart data={statusPekerjaan} layout="vertical" margin={{ left: 60 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" allowDecimals={false} />
               <YAxis type="category" dataKey="label" width={100} tick={{ fontSize: 12 }} />
@@ -163,7 +168,7 @@ export default function DashboardPage() {
 
         <ChartCard title="Pendidikan Pencari Kerja">
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={data.pendidikan} margin={{ bottom: 40 }}>
+            <BarChart data={pendidikan} margin={{ bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="label" angle={-30} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} />
@@ -175,7 +180,7 @@ export default function DashboardPage() {
 
         <ChartCard title="Lamaran Masuk per Bulan">
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={data.lamaranMasuk.length > 0 ? data.lamaranMasuk : [{ label: 'Belum ada data', value: 0 }]} margin={{ bottom: 40 }}>
+            <BarChart data={lamaranMasuk.length > 0 ? lamaranMasuk : [{ label: 'Belum ada data', value: 0 }]} margin={{ bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="label" angle={-30} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} />
