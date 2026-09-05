@@ -175,6 +175,17 @@ export default function PetaSebaranPage() {
                 const kecData = data.find(d => d.kecamatan === name);
                 const count = kecData?.total ?? 0;
                 const opacity = count > 0 ? 0.15 + (count / maxTotal) * 0.35 : 0.08;
+                const minatList = (kecData?.minat ?? []).slice(0, 3).map(m =>
+                  `<div style="font-size:12px;color:#555">${m.kompetensi}: ${m.jumlah} orang</div>`
+                ).join('');
+                const extra = (kecData?.minat?.length ?? 0) > 3
+                  ? `<div style="font-size:11px;color:#999;margin-top:2px">+${(kecData?.minat?.length ?? 0) - 3} lainnya</div>` : '';
+                const popupHtml = `
+                  <div style="min-width:180px">
+                    <strong style="font-size:14px">${name}</strong>
+                    <div style="margin:6px 0;font-size:13px"><b>${count}</b> pencari kerja berminat</div>
+                    ${minatList}${extra}
+                  </div>`;
                 return (
                   <GeoJSON
                     key={name}
@@ -184,6 +195,15 @@ export default function PetaSebaranPage() {
                       weight: 2,
                       fillColor: style.fillColor,
                       fillOpacity: opacity,
+                    }}
+                    onEachFeature={(_feat, layer) => {
+                      layer.bindPopup(popupHtml);
+                      layer.on('mouseover', function (this: L.Path) {
+                        this.setStyle({ weight: 3, fillOpacity: opacity + 0.15 });
+                      });
+                      layer.on('mouseout', function (this: L.Path) {
+                        this.setStyle({ weight: 2, fillOpacity: opacity });
+                      });
                     }}
                   />
                 );
