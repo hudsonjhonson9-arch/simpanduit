@@ -3,9 +3,9 @@ import type { Module } from '../api/gasClient';
 
 /** Menu yang boleh dilihat masing-masing role. Path harus cocok dengan route di App.tsx. */
 export const MENU_ACCESS: Record<Role, string[]> = {
-  Admin: ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan', '/pengguna'],
-  Operator: ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan'],
-  'Kepala Bidang': ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan'],
+  Admin: ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/lowongan-kerja', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan', '/pengguna'],
+  Operator: ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/lowongan-kerja', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan'],
+  'Kepala Bidang': ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/lowongan-kerja', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan'],
   Mentor: ['/beranda', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan']
 };
 

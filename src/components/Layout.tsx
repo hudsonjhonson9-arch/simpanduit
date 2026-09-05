@@ -9,6 +9,7 @@ const menu = [
   { to: '/beranda/akad', label: 'AKAD' },
   { to: '/beranda/akan', label: 'AKAN (CPMI)' },
   { to: '/beranda/karirhub', label: 'KarirHub' },
+  { to: '/beranda/lowongan-kerja', label: '📋 Lowongan Kerja' },
   { to: '/beranda/pencari-kerja', label: 'Pendataan Pencari Kerja' },
   { to: '/beranda/identifikasi', label: '⭐ Identifikasi Kebutuhan' },
   { to: '/beranda/rekomendasi', label: '⭐ Rekomendasi Pelatihan' },

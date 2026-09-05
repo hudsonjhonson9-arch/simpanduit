@@ -12,6 +12,7 @@ import DudiPage from './pages/DudiPage';
 import AkadPage from './pages/AkadPage';
 import AkanPage from './pages/AkanPage';
 import KarirHubPage from './pages/KarirHubPage';
+import LowonganKerjaPage from './pages/LowonganKerjaPage';
 import PencariKerjaPage from './pages/PencariKerjaPage';
 import IdentifikasiPage from './pages/IdentifikasiPage';
 import RekomendasiPage from './pages/RekomendasiPage';
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="akad" element={guarded(<AkadPage />)} />
             <Route path="akan" element={guarded(<AkanPage />)} />
             <Route path="karirhub" element={guarded(<KarirHubPage />)} />
+            <Route path="lowongan-kerja" element={guarded(<LowonganKerjaPage />)} />
             <Route path="pencari-kerja" element={guarded(<PencariKerjaPage />)} />
             <Route path="identifikasi" element={guarded(<IdentifikasiPage />)} />
             <Route path="rekomendasi" element={guarded(<RekomendasiPage />)} />
