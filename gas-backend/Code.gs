@@ -515,6 +515,57 @@ function dashboardAnalisis() {
   });
   const totalGender = lakiLaki + perempuan;
 
+  // Distribusi usia
+  const usiaBuckets = { '15-19': 0, '20-24': 0, '25-29': 0, '30-34': 0, '35-39': 0, '40+': 0 };
+  pencariKerja.forEach(p => {
+    const age = Number(p.umur);
+    if (!age || isNaN(age)) return;
+    if (age < 20) usiaBuckets['15-19']++;
+    else if (age < 25) usiaBuckets['20-24']++;
+    else if (age < 30) usiaBuckets['25-29']++;
+    else if (age < 35) usiaBuckets['30-34']++;
+    else if (age < 40) usiaBuckets['35-39']++;
+    else usiaBuckets['40+']++;
+  });
+  const distribusiUsia = Object.keys(usiaBuckets).map(k => ({ label: k, value: usiaBuckets[k] }));
+
+  // Status pekerjaan
+  const statusCount = {};
+  pencariKerja.forEach(p => {
+    const s = String(p.status || '').trim() || 'Tidak diketahui';
+    statusCount[s] = (statusCount[s] || 0) + 1;
+  });
+  const statusPekerjaan = Object.keys(statusCount)
+    .map(k => ({ label: k, value: statusCount[k] }))
+    .sort((a, b) => b.value - a.value);
+
+  // Pendidikan
+  const pendidikanCount = {};
+  pencariKerja.forEach(p => {
+    const d = String(p.pendidikan || '').trim() || 'Tidak diketahui';
+    pendidikanCount[d] = (pendidikanCount[d] || 0) + 1;
+  });
+  const pendidikan = Object.keys(pendidikanCount)
+    .map(k => ({ label: k, value: pendidikanCount[k] }))
+    .sort((a, b) => b.value - a.value);
+
+  // Lamaran masuk
+  const lamaran = getSheetData('Lamaran');
+  const lamaranPerBulan = {};
+  lamaran.forEach(l => {
+    if (!l.created_at) return;
+    const d = new Date(l.created_at);
+    const key = (d.getMonth() + 1) + '/' + d.getFullYear();
+    lamaranPerBulan[key] = (lamaranPerBulan[key] || 0) + 1;
+  });
+  const lamaranMasuk = Object.keys(lamaranPerBulan)
+    .map(k => ({ label: k, value: lamaranPerBulan[k] }))
+    .sort((a, b) => {
+      const [mA, yA] = a.label.split('/');
+      const [mB, yB] = b.label.split('/');
+      return (Number(yA) - Number(yB)) || (Number(mA) - Number(mB));
+    });
+
   return {
     success: true,
     data: {
@@ -530,7 +581,12 @@ function dashboardAnalisis() {
       },
       totalPencariKerja: pencariKerja.length,
       totalDudi: dudi.length,
-      totalLowongan: karirhub.length + akad.length
+      totalLowongan: karirhub.length + akad.length,
+      totalLamaran: lamaran.length,
+      distribusiUsia: distribusiUsia,
+      statusPekerjaan: statusPekerjaan,
+      pendidikan: pendidikan,
+      lamaranMasuk: lamaranMasuk
     }
   };
 }

@@ -14,6 +14,11 @@ interface DashboardData {
   totalPencariKerja: number;
   totalDudi: number;
   totalLowongan: number;
+  totalLamaran: number;
+  distribusiUsia: { label: string; value: number }[];
+  statusPekerjaan: { label: string; value: number }[];
+  pendidikan: { label: string; value: number }[];
+  lamaranMasuk: { label: string; value: number }[];
 }
 
 const GENDER_COLORS = ['var(--primary)', '#ec4899'];
@@ -64,6 +69,10 @@ export default function DashboardPage() {
         <div className="card-stat">
           <div className="stat-value">{data.totalLowongan}</div>
           <div className="stat-label">Total Lowongan</div>
+        </div>
+        <div className="card-stat">
+          <div className="stat-value">{data.totalLamaran ?? 0}</div>
+          <div className="stat-label">Total Lamaran</div>
         </div>
       </div>
 
@@ -125,6 +134,54 @@ export default function DashboardPage() {
               <Legend />
               <Tooltip />
             </PieChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Distribusi Usia Pencari Kerja">
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={data.distribusiUsia} margin={{ bottom: 40 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Bar dataKey="value" fill="#0ea5e9" />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Status Pekerjaan">
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={data.statusPekerjaan} layout="vertical" margin={{ left: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" allowDecimals={false} />
+              <YAxis type="category" dataKey="label" width={100} tick={{ fontSize: 12 }} />
+              <Tooltip />
+              <Bar dataKey="value" fill="#8b5cf6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Pendidikan Pencari Kerja">
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={data.pendidikan} margin={{ bottom: 40 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="label" angle={-30} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Bar dataKey="value" fill="#14b8a6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Lamaran Masuk per Bulan">
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={data.lamaranMasuk.length > 0 ? data.lamaranMasuk : [{ label: 'Belum ada data', value: 0 }]} margin={{ bottom: 40 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="label" angle={-30} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Bar dataKey="value" fill="#f59e0b" />
+            </BarChart>
           </ResponsiveContainer>
         </ChartCard>
       </div>
