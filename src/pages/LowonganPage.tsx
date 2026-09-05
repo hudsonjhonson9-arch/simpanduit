@@ -147,14 +147,18 @@ export default function LowonganPage() {
       {selected && <LowonganDetailModal lowongan={selected} onClose={() => setSelected(null)} />}
 
       {/* Info Pelatihan Section */}
-      {pelatihan.length > 0 && (
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px 40px' }}>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 4, color: 'var(--text)' }}>
-            Info Pelatihan
-          </h2>
-          <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', marginBottom: 20 }}>
-            Pelatihan dan pengembangan kompetensi untuk masyarakat
-          </p>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px 40px' }}>
+        <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 4, color: 'var(--text)' }}>
+          Info Pelatihan
+        </h2>
+        <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', marginBottom: 20 }}>
+          Pelatihan dan pengembangan kompetensi untuk masyarakat
+        </p>
+        {pelatihan.length === 0 ? (
+          <div className="card" style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
+            Belum ada info pelatihan tersedia
+          </div>
+        ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
             {pelatihan.map(p => (
               <div key={p.id} className="card" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -183,8 +187,8 @@ export default function LowonganPage() {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
