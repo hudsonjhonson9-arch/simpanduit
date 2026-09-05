@@ -16,7 +16,6 @@ import PencariKerjaPage from './pages/PencariKerjaPage';
 import IdentifikasiPage from './pages/IdentifikasiPage';
 import RekomendasiPage from './pages/RekomendasiPage';
 import PetaSebaranPage from './pages/PetaSebaranPage';
-import DashboardPage from './pages/DashboardPage';
 import LaporanPage from './pages/LaporanPage';
 import GapKompetensiPage from './pages/GapKompetensiPage';
 
@@ -49,7 +48,6 @@ export default function App() {
             <Route path="identifikasi" element={guarded(<IdentifikasiPage />)} />
             <Route path="rekomendasi" element={guarded(<RekomendasiPage />)} />
             <Route path="peta-sebaran" element={guarded(<PetaSebaranPage />)} />
-            <Route path="dashboard" element={guarded(<DashboardPage />)} />
             <Route path="laporan" element={guarded(<LaporanPage />)} />
             <Route path="gap-kompetensi" element={guarded(<GapKompetensiPage />)} />
           </Route>
