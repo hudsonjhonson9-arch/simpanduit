@@ -206,7 +206,7 @@ export default function PetaSebaranPage() {
                   </div>`;
                 return (
                   <GeoJSON
-                    key={name}
+                    key={`${name}-${count}`}
                     data={geojson}
                     style={{
                       color: style.color,
