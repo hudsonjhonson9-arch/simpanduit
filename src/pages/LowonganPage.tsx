@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { gasApi } from '../api/gasClient';
 import LowonganDetailModal from '../components/LowonganDetailModal';
-import { Link } from 'react-router-dom';
 
 interface Lowongan {
   id: string;
@@ -18,6 +17,20 @@ interface Lowongan {
   produk: string;
 }
 
+interface Pelatihan {
+  id: string;
+  judul: string;
+  deskripsi: string;
+  kompetensi: string;
+  lokasi: string;
+  jadwal: string;
+  penyelenggara: string;
+  kontak: string;
+  target_peserta: string;
+  kuota: number;
+  status: string;
+}
+
 export default function LowonganPage() {
   const [lowongan, setLowongan] = useState<Lowongan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,10 +38,15 @@ export default function LowonganPage() {
   const [filterLokasi, setFilterLokasi] = useState('');
   const [filterSumber, setFilterSumber] = useState('');
   const [selected, setSelected] = useState<Lowongan | null>(null);
+  const [pelatihan, setPelatihan] = useState<Pelatihan[]>([]);
 
   useEffect(() => {
-    gasApi.lowonganPublik().then(res => {
-      if (res.success) setLowongan(res.data);
+    Promise.all([
+      gasApi.lowonganPublik(),
+      gasApi.infoPelatihanPublik()
+    ]).then(([lowRes, pelRes]) => {
+      if (lowRes.success) setLowongan(lowRes.data);
+      if (pelRes.success) setPelatihan(pelRes.data);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -128,27 +146,45 @@ export default function LowonganPage() {
       {/* Modal */}
       {selected && <LowonganDetailModal lowongan={selected} onClose={() => setSelected(null)} />}
 
-      {/* Info Pelatihan CTA */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px 40px' }}>
-        <div className="card" style={{ padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-          <div>
-            <h2 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' }}>
-              Info Pelatihan
-            </h2>
-            <p style={{ margin: 0, fontSize: '.85rem', color: 'var(--text-muted)' }}>
-              Lihat pelatihan dan pengembangan kompetensi yang tersedia
-            </p>
+      {/* Info Pelatihan Section */}
+      {pelatihan.length > 0 && (
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px 40px' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 4, color: 'var(--text)' }}>
+            Info Pelatihan
+          </h2>
+          <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', marginBottom: 20 }}>
+            Pelatihan dan pengembangan kompetensi untuk masyarakat
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
+            {pelatihan.map(p => (
+              <div key={p.id} className="card" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '.72rem', fontWeight: 600, padding: '2px 8px', borderRadius: 12, background: '#dcfce7', color: '#16a34a' }}>
+                    {p.kompetensi || 'Umum'}
+                  </span>
+                  <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>{p.jadwal || '-'}</span>
+                </div>
+                <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>
+                  {p.judul}
+                </h3>
+                {p.deskripsi && (
+                  <p style={{ margin: 0, fontSize: '.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                    {p.deskripsi.length > 100 ? p.deskripsi.slice(0, 100) + '...' : p.deskripsi}
+                  </p>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 'auto' }}>
+                  <div style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>📍 {p.lokasi || '-'}</div>
+                  <div style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>🏢 {p.penyelenggara || '-'}</div>
+                  <div style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>👥 Kuota: {p.kuota || '-'}</div>
+                </div>
+                {p.kontak && (
+                  <div style={{ fontSize: '.78rem', color: 'var(--primary)' }}>📞 {p.kontak}</div>
+                )}
+              </div>
+            ))}
           </div>
-          <Link to="/info-pelatihan" style={{
-            padding: '10px 20px', borderRadius: 'var(--radius-sm)',
-            background: 'var(--primary)', color: '#fff',
-            textDecoration: 'none', fontSize: '.85rem', fontWeight: 600,
-            whiteSpace: 'nowrap',
-          }}>
-            Lihat Semua &rarr;
-          </Link>
         </div>
-      </div>
+      )}
     </div>
   );
 }
