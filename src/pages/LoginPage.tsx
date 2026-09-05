@@ -19,7 +19,7 @@ export default function LoginPage() {
     const res = await login(username, password);
     setLoading(false);
     if (res.success) {
-      navigate('/');
+      navigate('/beranda');
     } else {
       setError(res.error ?? 'Login gagal.');
       errorRef.current?.classList.remove('login-error');
