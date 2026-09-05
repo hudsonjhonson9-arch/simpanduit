@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -85,6 +85,16 @@ function FitBounds() {
   return null;
 }
 
+// ponytail: expose map ke window supaya popup onclick bisa akses
+function MapSync() {
+  const map = useMap();
+  useEffect(() => {
+    (window as any).__petamap = map;
+    return () => { (window as any).__petamap = null; };
+  }, [map]);
+  return null;
+}
+
 function Legend() {
   const map = useMap();
   useEffect(() => {
@@ -167,6 +177,7 @@ export default function PetaSebaranPage() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               <FitBounds />
+              <MapSync />
               <Legend />
               {KEC_NAMES.map(name => {
                 const geojson = geojsonData[name];
@@ -181,10 +192,17 @@ export default function PetaSebaranPage() {
                 const extra = (kecData?.minat?.length ?? 0) > 3
                   ? `<div style="font-size:11px;color:#999;margin-top:2px">+${(kecData?.minat?.length ?? 0) - 3} lainnya</div>` : '';
                 const popupHtml = `
-                  <div style="min-width:180px">
+                  <div style="min-width:200px">
                     <strong style="font-size:14px">${name}</strong>
                     <div style="margin:6px 0;font-size:13px"><b>${count}</b> pencari kerja berminat</div>
                     ${minatList}${extra}
+                    <div style="display:flex;gap:6px;margin-top:8px">
+                      <button onclick="var m=window.__petamap;if(m){m.setView([${KEC_COORDS[name]?.[0] ?? -9.63},${KEC_COORDS[name]?.[1] ?? 119.40}],13)}"
+                        style="flex:1;padding:5px 8px;font-size:11px;border:1px solid #ddd;border-radius:6px;background:#f9fafb;cursor:pointer;font-weight:600">Lihat Di Mana</button>
+                      <a href="#card-${name.replace(/\s+/g, '-')}"
+                        onclick="document.getElementById('card-${name.replace(/\s+/g, '-')}')?.scrollIntoView({behavior:'smooth',block:'center'})"
+                        style="flex:1;padding:5px 8px;font-size:11px;border:none;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer;font-weight:600;text-align:center;text-decoration:none">Lihat Detail</a>
+                    </div>
                   </div>`;
                 return (
                   <GeoJSON
@@ -240,7 +258,7 @@ export default function PetaSebaranPage() {
           {/* Detail cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
             {data.map(kec => (
-              <div key={kec.kecamatan} className="card">
+              <div key={kec.kecamatan} id={`card-${kec.kecamatan.replace(/\s+/g, '-')}`} className="card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <h3 style={{ margin: 0 }}>{kec.kecamatan}</h3>
                   <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{kec.total} orang</span>
