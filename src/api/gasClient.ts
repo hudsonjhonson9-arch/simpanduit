@@ -71,6 +71,9 @@ export const gasApi = {
   lowonganPublik: () =>
     gasRequest({ action: 'lowonganPublik' }),
 
+  rekomendasiPublik: () =>
+    gasRequest({ action: 'rekomendasiPublik' }),
+
   lamarLowongan: (data: Record<string, any>) =>
     gasRequest({ action: 'lamarLowongan', ...data })
 };

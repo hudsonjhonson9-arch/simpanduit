@@ -139,6 +139,7 @@ function handleRequest(e) {
     // Public actions — no auth required
     if (action === 'lowonganPublik') return jsonResponse(lowonganPublik());
     if (action === 'lamarLowongan') return jsonResponse(lamarLowongan(body));
+    if (action === 'rekomendasiPublik') return jsonResponse(rekomendasiPublik());
 
     // Semua aksi CRUD generik: create / read / update / delete
     const module = params.module || body.module;
@@ -751,6 +752,76 @@ function lowonganPublik() {
   });
 
   return { success: true, data: lowongan };
+}
+
+/**
+ * Rekomendasi pelatihan untuk halaman publik — top 10 berdasarkan skor
+ */
+function rekomendasiPublik() {
+  const dudi = getSheetData('DUDI');
+  const karirhub = getSheetData('KarirHub');
+  let pencariKerja = getSheetData('PencariKerja');
+
+  const map = {};
+
+  function ensure(label) {
+    const key = String(label).trim().toLowerCase();
+    if (!key) return null;
+    if (!map[key]) map[key] = { label: String(label).trim(), dudi: 0, lowongan: 0, minat: 0 };
+    return map[key];
+  }
+
+  dudi.forEach(d => {
+    const jumlah = Number(d.jumlah_kebutuhan) || 1;
+    String(d.kompetensi_dibutuhkan || '').split(',').forEach(k => {
+      const entry = ensure(k);
+      if (entry) entry.dudi += jumlah;
+    });
+  });
+
+  karirhub.forEach(l => {
+    String(l.kompetensi || '').split(',').forEach(k => {
+      const entry = ensure(k);
+      if (entry) entry.lowongan += 1;
+    });
+  });
+
+  pencariKerja.forEach(p => {
+    String(p.minat_pelatihan || '').split(',').forEach(k => {
+      const entry = ensure(k);
+      if (entry) entry.minat += 1;
+    });
+  });
+
+  const entries = Object.values(map);
+  if (entries.length === 0) return { success: true, data: [] };
+
+  const maxDudi = Math.max(...entries.map(e => e.dudi), 1);
+  const maxLowongan = Math.max(...entries.map(e => e.lowongan), 1);
+  const maxMinat = Math.max(...entries.map(e => e.minat), 1);
+
+  const results = entries.map(e => {
+    const skorDudi = e.dudi / maxDudi;
+    const skorLowongan = e.lowongan / maxLowongan;
+    const skorMinat = e.minat / maxMinat;
+    const skorTotal = (skorDudi * BOBOT_DUDI) + (skorLowongan * BOBOT_LOWONGAN) + (skorMinat * BOBOT_MINAT);
+
+    let prioritas;
+    if (skorTotal >= 0.66) prioritas = 'Tinggi';
+    else if (skorTotal >= 0.33) prioritas = 'Sedang';
+    else prioritas = 'Rendah';
+
+    return {
+      kompetensi: e.label,
+      jumlah_dudi_butuh: e.dudi,
+      jumlah_lowongan: e.lowongan,
+      jumlah_minat: e.minat,
+      skor_total: Math.round(skorTotal * 100) / 100,
+      prioritas: prioritas
+    };
+  }).sort((a, b) => b.skor_total - a.skor_total).slice(0, 10);
+
+  return { success: true, data: results };
 }
 
 function lamarLowongan(body) {

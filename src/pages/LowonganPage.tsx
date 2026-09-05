@@ -17,6 +17,15 @@ interface Lowongan {
   produk: string;
 }
 
+interface Rekomendasi {
+  kompetensi: string;
+  jumlah_dudi_butuh: number;
+  jumlah_lowongan: number;
+  jumlah_minat: number;
+  skor_total: number;
+  prioritas: string;
+}
+
 export default function LowonganPage() {
   const [lowongan, setLowongan] = useState<Lowongan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,10 +33,15 @@ export default function LowonganPage() {
   const [filterLokasi, setFilterLokasi] = useState('');
   const [filterSumber, setFilterSumber] = useState('');
   const [selected, setSelected] = useState<Lowongan | null>(null);
+  const [rekomendasi, setRekomendasi] = useState<Rekomendasi[]>([]);
 
   useEffect(() => {
-    gasApi.lowonganPublik().then(res => {
-      if (res.success) setLowongan(res.data);
+    Promise.all([
+      gasApi.lowonganPublik(),
+      gasApi.rekomendasiPublik()
+    ]).then(([lowRes, rekRes]) => {
+      if (lowRes.success) setLowongan(lowRes.data);
+      if (rekRes.success) setRekomendasi(rekRes.data);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -126,6 +140,48 @@ export default function LowonganPage() {
 
       {/* Modal */}
       {selected && <LowonganDetailModal lowongan={selected} onClose={() => setSelected(null)} />}
+
+      {/* Pelatihan Section */}
+      {rekomendasi.length > 0 && (
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px 40px' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 16, color: 'var(--text)' }}>
+            Rekomendasi Pelatihan
+          </h2>
+          <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', marginBottom: 20, marginTop: -8 }}>
+            Pelatihan berdasarkan kebutuhan DUDI, ketersediaan lowongan, dan minat masyarakat
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
+            {rekomendasi.map((r, i) => (
+              <div key={i} className="card" style={{ padding: '16px 18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                  <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, flex: 1 }}>
+                    {r.kompetensi}
+                  </h3>
+                  <span style={{
+                    padding: '2px 10px', borderRadius: 20, fontSize: '.72rem', fontWeight: 700, marginLeft: 8, whiteSpace: 'nowrap',
+                    background: r.prioritas === 'Tinggi' ? '#fef2f2' : r.prioritas === 'Sedang' ? '#fffbeb' : '#f0fdf4',
+                    color: r.prioritas === 'Tinggi' ? '#dc2626' : r.prioritas === 'Sedang' ? '#d97706' : '#16a34a',
+                  }}>{r.prioritas}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    {r.jumlah_dudi_butuh} DUDI membutuhkan
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    {r.jumlah_lowongan} lowongan tersedia
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    {r.jumlah_minat} masyarakat berminat
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

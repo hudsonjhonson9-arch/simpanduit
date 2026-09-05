@@ -4,17 +4,17 @@ import { useAuth } from '../context/AuthContext';
 import { canAccessMenu } from '../config/permissions';
 
 const menu = [
-  { to: '/', label: 'Beranda' },
-  { to: '/dudi', label: 'Profil Industri (DUDI)' },
-  { to: '/akad', label: 'AKAD' },
-  { to: '/akan', label: 'AKAN (CPMI)' },
-  { to: '/karirhub', label: 'KarirHub' },
-  { to: '/pencari-kerja', label: 'Pendataan Pencari Kerja' },
-  { to: '/identifikasi', label: '⭐ Identifikasi Kebutuhan' },
-  { to: '/rekomendasi', label: '⭐ Rekomendasi Pelatihan' },
-  { to: '/peta-sebaran', label: '⭐ Peta Sebaran Kebutuhan' },
-  { to: '/gap-kompetensi', label: '⭐ Gap Kompetensi' },
-  { to: '/laporan', label: 'Laporan' },
+  { to: '/beranda', label: 'Beranda' },
+  { to: '/beranda/dudi', label: 'Profil Industri (DUDI)' },
+  { to: '/beranda/akad', label: 'AKAD' },
+  { to: '/beranda/akan', label: 'AKAN (CPMI)' },
+  { to: '/beranda/karirhub', label: 'KarirHub' },
+  { to: '/beranda/pencari-kerja', label: 'Pendataan Pencari Kerja' },
+  { to: '/beranda/identifikasi', label: '⭐ Identifikasi Kebutuhan' },
+  { to: '/beranda/rekomendasi', label: '⭐ Rekomendasi Pelatihan' },
+  { to: '/beranda/peta-sebaran', label: '⭐ Peta Sebaran Kebutuhan' },
+  { to: '/beranda/gap-kompetensi', label: '⭐ Gap Kompetensi' },
+  { to: '/beranda/laporan', label: 'Laporan' },
 ];
 
 const styles = {
@@ -153,7 +153,7 @@ export default function Layout() {
             <NavLink
               key={m.to}
               to={m.to}
-              end={m.to === '/'}
+              end={m.to === '/beranda'}
               style={({ isActive }) => styles.link(isActive)}
               onClick={closeSidebar}
             >

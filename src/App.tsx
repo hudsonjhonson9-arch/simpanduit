@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -18,6 +18,7 @@ import RekomendasiPage from './pages/RekomendasiPage';
 import PetaSebaranPage from './pages/PetaSebaranPage';
 import LaporanPage from './pages/LaporanPage';
 import GapKompetensiPage from './pages/GapKompetensiPage';
+import DashboardPage from './pages/DashboardPage';
 
 function guarded(element: React.ReactNode) {
   return <RoleGuard>{element}</RoleGuard>;
@@ -30,9 +31,10 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/lowongan" element={<PublicLayout><LowonganPage /></PublicLayout>} />
+          <Route path="/" element={<PublicLayout><LowonganPage /></PublicLayout>} />
+          <Route path="/lowongan" element={<Navigate to="/" replace />} />
           <Route
-            path="/"
+            path="/beranda"
             element={
               <ProtectedRoute>
                 <Layout />
@@ -50,6 +52,7 @@ export default function App() {
             <Route path="peta-sebaran" element={guarded(<PetaSebaranPage />)} />
             <Route path="laporan" element={guarded(<LaporanPage />)} />
             <Route path="gap-kompetensi" element={guarded(<GapKompetensiPage />)} />
+            <Route path="dashboard" element={guarded(<DashboardPage />)} />
           </Route>
         </Routes>
       </AuthProvider>

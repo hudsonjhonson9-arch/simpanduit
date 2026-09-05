@@ -15,7 +15,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         top: 0,
         zIndex: 50,
       }}>
-        <Link to="/lowongan" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}>
           <span style={{
             width: 32,
             height: 32,
