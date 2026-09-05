@@ -4,7 +4,9 @@ import { ToastProvider } from './components/Toast';
 import ProtectedRoute from './components/ProtectedRoute';
 import RoleGuard from './components/RoleGuard';
 import Layout from './components/Layout';
+import PublicLayout from './components/PublicLayout';
 import LoginPage from './pages/LoginPage';
+import LowonganPage from './pages/LowonganPage';
 import BerandaPage from './pages/BerandaPage';
 import DudiPage from './pages/DudiPage';
 import AkadPage from './pages/AkadPage';
@@ -29,6 +31,7 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/lowongan" element={<PublicLayout><LowonganPage /></PublicLayout>} />
           <Route
             path="/"
             element={

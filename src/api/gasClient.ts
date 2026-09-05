@@ -66,5 +66,11 @@ export const gasApi = {
     gasRequest({ action: 'dashboardAnalisis' }),
 
   analisisKesesuaian: (kecamatan?: string) =>
-    gasRequest({ action: 'analisisKesesuaian', kecamatan })
+    gasRequest({ action: 'analisisKesesuaian', kecamatan }),
+
+  lowonganPublik: () =>
+    gasRequest({ action: 'lowonganPublik' }),
+
+  lamarLowongan: (data: Record<string, any>) =>
+    gasRequest({ action: 'lamarLowongan', ...data })
 };

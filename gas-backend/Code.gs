@@ -21,7 +21,8 @@ const SHEET_SCHEMAS = {
   AKAD: ['id', 'nama_perusahaan', 'lowongan', 'persyaratan', 'lokasi_kerja', 'cara_melamar', 'jadwal_rekrutmen', 'status', 'created_at'],
   AKAN: ['id', 'nama_p3mi', 'negara_tujuan', 'jabatan', 'gaji', 'persyaratan', 'dokumen', 'tahapan', 'kontak', 'created_at'],
   KarirHub: ['id', 'judul_lowongan', 'kompetensi', 'perusahaan', 'lokasi', 'deadline', 'created_at'],
-  RekomendasiPelatihan: ['id', 'kompetensi', 'kecamatan', 'jumlah_dudi_butuh', 'jumlah_lowongan', 'jumlah_minat', 'skor_total', 'prioritas', 'alasan', 'created_at']
+  RekomendasiPelatihan: ['id', 'kompetensi', 'kecamatan', 'jumlah_dudi_butuh', 'jumlah_lowongan', 'jumlah_minat', 'skor_total', 'prioritas', 'alasan', 'created_at'],
+  Lamaran: ['id', 'lowongan_id', 'sumber', 'nama_lengkap', 'email', 'telepon', 'pendidikan', 'pengalaman', 'cv_filename', 'cv_drive_id', 'status', 'created_at']
 };
 
 // Modul yang butuh login untuk semua aksi selain 'login'
@@ -134,6 +135,10 @@ function handleRequest(e) {
       if (!session.success) return jsonResponse({ success: false, error: 'Sesi tidak valid, silakan login ulang.' });
       return jsonResponse(analisisKesesuaian(body.kecamatan));
     }
+
+    // Public actions — no auth required
+    if (action === 'lowonganPublik') return jsonResponse(lowonganPublik());
+    if (action === 'lamarLowongan') return jsonResponse(lamarLowongan(body));
 
     // Semua aksi CRUD generik: create / read / update / delete
     const module = params.module || body.module;
@@ -643,6 +648,129 @@ function analisisKesesuaian(kecamatan) {
   results.forEach((r, i) => r.peringkat = i + 1);
 
   return { success: true, kecamatan: kecamatan || 'Semua', data: results };
+}
+
+// ---------- LOWONGAN PUBLIK ----------
+
+function lowonganPublik() {
+  const dudi = getSheetData('DUDI');
+  const karirhub = getSheetData('KarirHub');
+
+  const lowongan = [];
+
+  // DUDI → lowongan berdasarkan jumlah_kebutuhan
+  dudi.filter(d => Number(d.jumlah_kebutuhan) > 0).forEach(d => {
+    lowongan.push({
+      id: d.id,
+      judul: d.kompetensi_dibutuhkan || 'Lowongan Kerja',
+      perusahaan: d.nama_perusahaan,
+      lokasi: d.lokasi,
+      kompetensi: d.kompetensi_dibutuhkan,
+      persyaratan: d.persyaratan,
+      pendidikan: d.pendidikan || '-',
+      deadline: '-',
+      sumber: 'DUDI',
+      kontak_hrd: d.kontak_hrd || '-',
+      bidang_usaha: d.bidang_usaha || '-',
+      produk: d.produk || '-'
+    });
+  });
+
+  // KarirHub → semua lowongan
+  karirhub.forEach(k => {
+    lowongan.push({
+      id: k.id,
+      judul: k.judul_lowongan,
+      perusahaan: k.perusahaan,
+      lokasi: k.lokasi,
+      kompetensi: k.kompetensi,
+      persyaratan: '-',
+      pendidikan: '-',
+      deadline: k.deadline || '-',
+      sumber: 'KarirHub',
+      kontak_hrd: '-',
+      bidang_usaha: '-',
+      produk: '-'
+    });
+  });
+
+  return { success: true, data: lowongan };
+}
+
+function lamarLowongan(body) {
+  const { lowongan_id, sumber, nama_lengkap, email, telepon, pendidikan, pengalaman, cv_base64, cv_filename } = body;
+
+  if (!nama_lengkap || !email || !telepon) {
+    return { success: false, error: 'Nama, email, dan telepon wajib diisi.' };
+  }
+
+  // Simpan CV ke Google Drive (folder SIMPANDUIT_Lamaran)
+  let cv_drive_id = '';
+  if (cv_base64 && cv_filename) {
+    try {
+      const folder = getOrCreateFolder('SIMPANDUIT_Lamaran');
+      const blob = Utilities.newBlob(Utilities.base64Decode(cv_base64), getMimeType(cv_filename), cv_filename);
+      const file = folder.createFile(blob);
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      cv_drive_id = file.getId();
+    } catch (e) {
+      return { success: false, error: 'Gagal upload CV: ' + e.message };
+    }
+  }
+
+  const record = {
+    lowongan_id: lowongan_id || '',
+    sumber: sumber || '',
+    nama_lengkap: nama_lengkap,
+    email: email,
+    telepon: telepon,
+    pendidikan: pendidikan || '',
+    pengalaman: pengalaman || '',
+    cv_filename: cv_filename || '',
+    cv_drive_id: cv_drive_id,
+    status: 'Baru'
+  };
+
+  const id = Utilities.getUuid();
+  record.id = id;
+  record.created_at = new Date().toISOString();
+  appendRow('Lamaran', record);
+
+  // Kirim email notifikasi ke HRD jika kontak tersedia
+  try {
+    const keterangan = sumber === 'DUDI' ? getSheetData('DUDI').find(d => d.id === lowongan_id) : null;
+    const hrdEmail = keterangan && keterangan.kontak_hrd ? keterangan.kontak_hrd : null;
+    if (hrdEmail && hrdEmail.includes('@')) {
+      GmailApp.sendEmail(hrdEmail, 'Lamaran Baru - ' + (keterangan ? keterangan.nama_perusahaan : 'SIMPANDUIT'), 
+        'Halo,\n\nAnda menerima lamaran baru melalui SIMPANDUIT.\n\n' +
+        'Nama: ' + nama_lengkap + '\n' +
+        'Email: ' + email + '\n' +
+        'Telepon: ' + telepon + '\n' +
+        'Pendidikan: ' + (pendidikan || '-') + '\n' +
+        (keterangan ? 'Lowongan: ' + (keterangan.kompetensi_dibutuhkan || keterangan.nama_perusahaan) + '\n' : '') +
+        '\nCV tersedia di drive: https://drive.google.com/file/d/' + cv_drive_id + '/view\n\n' +
+        'Salam,\nTim SIMPANDUIT'
+      );
+    }
+  } catch (_) { /* email gagal tidak membatalkan lamaran */ }
+
+  return { success: true, id: id, message: 'Lamaran berhasil dikirim.' };
+}
+
+function getOrCreateFolder(name) {
+  const folders = DriveApp.getFoldersByName(name);
+  if (folders.hasNext()) return folders.next();
+  return DriveApp.createFolder(name);
+}
+
+function getMimeType(filename) {
+  const ext = String(filename).split('.').pop().toLowerCase();
+  const types = {
+    'pdf': 'application/pdf',
+    'doc': 'application/msword',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  };
+  return types[ext] || 'application/octet-stream';
 }
 
 // ---------- HELPERS ----------
