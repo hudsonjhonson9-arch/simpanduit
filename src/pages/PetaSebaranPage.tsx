@@ -76,15 +76,12 @@ function makeIcon(count: number, max: number): L.DivIcon {
   });
 }
 
-function FitBounds({ data }: { data: KecamatanData[] }) {
+function FitBounds() {
   const map = useMap();
   useEffect(() => {
-    const coords = data
-      .map(d => KEC_COORDS[d.kecamatan])
-      .filter(Boolean) as [number, number][];
+    const coords = Object.values(KEC_COORDS) as [number, number][];
     if (coords.length > 1) map.fitBounds(coords, { padding: [40, 40] });
-    else if (coords.length === 1) map.setView(coords[0], 12);
-  }, [data, map]);
+  }, [map]);
   return null;
 }
 
@@ -155,8 +152,6 @@ export default function PetaSebaranPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 400, color: 'var(--text-muted)' }}>
           <div className="spinner" style={{ marginRight: 8 }} /> Memuat data...
         </div>
-      ) : data.length === 0 ? (
-        <p>Belum ada data Pencari Kerja dengan kecamatan &amp; minat pelatihan terisi.</p>
       ) : (
         <>
           {/* Peta */}
@@ -171,17 +166,18 @@ export default function PetaSebaranPage() {
                 attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <FitBounds data={data} />
+              <FitBounds />
               <Legend />
-              {data.map(d => {
-                const geojson = geojsonData[d.kecamatan];
-                const style = KEC_STYLES[d.kecamatan];
+              {KEC_NAMES.map(name => {
+                const geojson = geojsonData[name];
+                const style = KEC_STYLES[name];
                 if (!geojson || !style) return null;
-                const count = d.total;
-                const opacity = 0.15 + (count / maxTotal) * 0.35;
+                const kecData = data.find(d => d.kecamatan === name);
+                const count = kecData?.total ?? 0;
+                const opacity = count > 0 ? 0.15 + (count / maxTotal) * 0.35 : 0.08;
                 return (
                   <GeoJSON
-                    key={d.kecamatan}
+                    key={name}
                     data={geojson}
                     style={{
                       color: style.color,
