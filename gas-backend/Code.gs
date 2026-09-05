@@ -22,11 +22,12 @@ const SHEET_SCHEMAS = {
   AKAN: ['id', 'nama_p3mi', 'negara_tujuan', 'jabatan', 'gaji', 'persyaratan', 'dokumen', 'tahapan', 'kontak', 'created_at'],
   KarirHub: ['id', 'judul_lowongan', 'kompetensi', 'perusahaan', 'lokasi', 'deadline', 'created_at'],
   RekomendasiPelatihan: ['id', 'kompetensi', 'kecamatan', 'jumlah_dudi_butuh', 'jumlah_lowongan', 'jumlah_minat', 'skor_total', 'prioritas', 'alasan', 'created_at'],
-  Lamaran: ['id', 'lowongan_id', 'sumber', 'nama_lengkap', 'email', 'telepon', 'pendidikan', 'pengalaman', 'cv_filename', 'cv_drive_id', 'status', 'created_at']
+  Lamaran: ['id', 'lowongan_id', 'sumber', 'nama_lengkap', 'email', 'telepon', 'pendidikan', 'pengalaman', 'cv_filename', 'cv_drive_id', 'status', 'created_at'],
+  InfoPelatihan: ['id', 'judul', 'deskripsi', 'kompetensi', 'lokasi', 'jadwal', 'penyelenggara', 'kontak', 'target_peserta', 'kuota', 'status', 'created_at']
 };
 
 // Modul yang butuh login untuk semua aksi selain 'login'
-const PROTECTED_MODULES = ['Users', 'PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub', 'RekomendasiPelatihan'];
+const PROTECTED_MODULES = ['Users', 'PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub', 'RekomendasiPelatihan', 'InfoPelatihan'];
 
 // Bobot skor untuk Identifikasi Kebutuhan Pelatihan (total harus 1.0)
 const BOBOT_DUDI = 0.4;
@@ -140,6 +141,7 @@ function handleRequest(e) {
     if (action === 'lowonganPublik') return jsonResponse(lowonganPublik());
     if (action === 'lamarLowongan') return jsonResponse(lamarLowongan(body));
     if (action === 'rekomendasiPublik') return jsonResponse(rekomendasiPublik());
+    if (action === 'infoPelatihanPublik') return jsonResponse(infoPelatihanPublik());
 
     // Semua aksi CRUD generik: create / read / update / delete
     const module = params.module || body.module;
@@ -175,8 +177,8 @@ function handleRequest(e) {
 // Admin & Operator: input data operasional. Users: khusus Admin.
 // Kepala Bidang & Mentor: read-only di semua modul (tidak masuk daftar ini).
 const WRITE_PERMISSIONS = {
-  Admin: ['Users', 'PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub', 'RekomendasiPelatihan'],
-  Operator: ['PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub']
+  Admin: ['Users', 'PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub', 'RekomendasiPelatihan', 'InfoPelatihan'],
+  Operator: ['PencariKerja', 'DUDI', 'AKAD', 'AKAN', 'KarirHub', 'InfoPelatihan']
 };
 
 function checkWritePermission(module, role) {
@@ -822,6 +824,15 @@ function rekomendasiPublik() {
   }).sort((a, b) => b.skor_total - a.skor_total).slice(0, 10);
 
   return { success: true, data: results };
+}
+
+/**
+ * Info pelatihan untuk halaman publik — semua data aktif
+ */
+function infoPelatihanPublik() {
+  const all = getSheetData('InfoPelatihan');
+  const data = all.filter(r => String(r.status || '').toLowerCase() !== 'ditutup');
+  return { success: true, data: data };
 }
 
 function lamarLowongan(body) {

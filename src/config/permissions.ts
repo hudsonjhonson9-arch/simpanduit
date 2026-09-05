@@ -3,10 +3,10 @@ import type { Module } from '../api/gasClient';
 
 /** Menu yang boleh dilihat masing-masing role. Path harus cocok dengan route di App.tsx. */
 export const MENU_ACCESS: Record<Role, string[]> = {
-  Admin: ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/pengguna'],
-  Operator: ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi'],
-  'Kepala Bidang': ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi'],
-  Mentor: ['/beranda', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi']
+  Admin: ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan', '/pengguna'],
+  Operator: ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan'],
+  'Kepala Bidang': ['/beranda', '/beranda/dudi', '/beranda/akad', '/beranda/akan', '/beranda/karirhub', '/beranda/pencari-kerja', '/beranda/identifikasi', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan'],
+  Mentor: ['/beranda', '/beranda/rekomendasi', '/beranda/peta-sebaran', '/beranda/dashboard', '/beranda/laporan', '/beranda/gap-kompetensi', '/beranda/info-pelatihan']
 };
 
 /** Modul yang boleh ditulis (tambah/edit/hapus) oleh masing-masing role. Harus sinkron dengan WRITE_PERMISSIONS di Code.gs. */

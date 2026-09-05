@@ -19,6 +19,8 @@ import PetaSebaranPage from './pages/PetaSebaranPage';
 import LaporanPage from './pages/LaporanPage';
 import GapKompetensiPage from './pages/GapKompetensiPage';
 import DashboardPage from './pages/DashboardPage';
+import InfoPelatihanPage from './pages/InfoPelatihanPage';
+import PublicInfoPelatihanPage from './pages/PublicInfoPelatihanPage';
 
 function guarded(element: React.ReactNode) {
   return <RoleGuard>{element}</RoleGuard>;
@@ -33,6 +35,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<PublicLayout><LowonganPage /></PublicLayout>} />
           <Route path="/lowongan" element={<Navigate to="/" replace />} />
+          <Route path="/info-pelatihan" element={<PublicInfoPelatihanPage />} />
           <Route
             path="/beranda"
             element={
@@ -52,6 +55,7 @@ export default function App() {
             <Route path="peta-sebaran" element={guarded(<PetaSebaranPage />)} />
             <Route path="laporan" element={guarded(<LaporanPage />)} />
             <Route path="gap-kompetensi" element={guarded(<GapKompetensiPage />)} />
+            <Route path="info-pelatihan" element={guarded(<InfoPelatihanPage />)} />
             <Route path="dashboard" element={guarded(<DashboardPage />)} />
           </Route>
         </Routes>

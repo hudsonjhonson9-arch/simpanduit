@@ -29,6 +29,19 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           }}>S</span>
           <span style={{ fontWeight: 700, fontSize: '1.05rem', letterSpacing: '-0.01em' }}>SIMPANDUIT</span>
         </Link>
+        <Link to="/info-pelatihan" style={{
+          fontSize: '.85rem',
+          color: '#94a3b8',
+          textDecoration: 'none',
+          padding: '6px 14px',
+          borderRadius: 'var(--radius-sm)',
+          transition: 'var(--transition)',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,.08)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
+          Info Pelatihan
+        </Link>
         <Link to="/login" style={{
           fontSize: '.85rem',
           color: '#94a3b8',

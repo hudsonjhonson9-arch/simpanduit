@@ -14,6 +14,7 @@ const menu = [
   { to: '/beranda/rekomendasi', label: '⭐ Rekomendasi Pelatihan' },
   { to: '/beranda/peta-sebaran', label: '⭐ Peta Sebaran Kebutuhan' },
   { to: '/beranda/gap-kompetensi', label: '⭐ Gap Kompetensi' },
+  { to: '/beranda/info-pelatihan', label: '📋 Info Pelatihan' },
   { to: '/beranda/laporan', label: 'Laporan' },
 ];
 
