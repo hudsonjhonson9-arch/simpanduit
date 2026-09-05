@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, GeoJSON, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { gasApi } from '../api/gasClient';
@@ -58,23 +58,6 @@ const KEC_COORDS: Record<string, [number, number]> = {
   'Wanokaka': [-9.723, 119.453],
   'Laboya Barat': [-9.713, 119.256],
 };
-
-function makeIcon(count: number, max: number): L.DivIcon {
-  const ratio = max > 0 ? count / max : 0;
-  const size = 32 + ratio * 16;
-  const color = ratio > 0.6 ? '#dc2626' : ratio > 0.3 ? '#d97706' : '#059669';
-  return L.divIcon({
-    className: 'custom-marker',
-    html: `<div style="
-      width:${size}px;height:${size}px;border-radius:50%;
-      background:${color};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4);
-      display:flex;align-items:center;justify-content:center;
-      color:#fff;font-weight:700;font-size:12px;
-    ">${count}</div>`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-  });
-}
 
 function FitBounds() {
   const map = useMap();
@@ -226,40 +209,16 @@ export default function PetaSebaranPage() {
                   />
                 );
               })}
-              {data.map(d => {
-                const kecKey = d.kecamatan.replace(/^Kec\.\s*/, '');
-                const coords = KEC_COORDS[kecKey];
-                if (!coords) return null;
-                return (
-                  <Marker key={d.kecamatan} position={coords} icon={makeIcon(d.total, maxTotal)}>
-                    <Popup>
-                      <div style={{ minWidth: 180 }}>
-                        <strong style={{ fontSize: 14 }}>{d.kecamatan}</strong>
-                        <div style={{ margin: '6px 0', fontSize: 13 }}>
-                          <b>{d.total}</b> pencari kerja berminat
-                        </div>
-                        {d.minat.slice(0, 3).map(m => (
-                          <div key={m.kompetensi} style={{ fontSize: 12, color: '#555' }}>
-                            {m.kompetensi}: {m.jumlah} orang
-                          </div>
-                        ))}
-                        {d.minat.length > 3 && (
-                          <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
-                            +{d.minat.length - 3} lainnya
-                          </div>
-                        )}
-                      </div>
-                    </Popup>
-                  </Marker>
-                );
-              })}
+              {/* Marker dihapus — data sudah ada di polygon popup */}
             </MapContainer>
           </div>
 
           {/* Detail cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
-            {data.map(kec => (
-              <div key={kec.kecamatan} id={`card-${kec.kecamatan.replace(/\s+/g, '-')}`} className="card">
+            {data.map(kec => {
+              const kecKey = kec.kecamatan.replace(/^Kec\.\s*/, '');
+              return (
+              <div key={kec.kecamatan} id={`card-${kecKey.replace(/\s+/g, '-')}`} className="card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <h3 style={{ margin: 0 }}>{kec.kecamatan}</h3>
                   <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{kec.total} orang</span>
@@ -296,7 +255,8 @@ export default function PetaSebaranPage() {
                   </p>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         </>
       )}
