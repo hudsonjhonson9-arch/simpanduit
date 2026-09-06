@@ -246,7 +246,7 @@ export default function LowonganDetailModal({ lowongan, onClose }: Props) {
   );
 }
 
-function Detail({ label, value }: { label: string; value: string }) {
+function Detail({ label, value }: { label: string; value?: string }) {
   if (!value || value === '-') return null;
   return (
     <div>
