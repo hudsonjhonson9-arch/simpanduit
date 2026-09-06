@@ -138,10 +138,10 @@ button.btn-danger:hover { background: #b91c1c; }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: var(--surface);
   border-radius: var(--radius);
-  overflow: hidden;
   box-shadow: var(--shadow);
   font-size: 0.875rem;
 }
@@ -157,6 +157,9 @@ thead th {
   text-align: left;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 tbody td {
