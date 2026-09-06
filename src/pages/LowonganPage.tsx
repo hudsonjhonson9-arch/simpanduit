@@ -216,7 +216,7 @@ export default function LowonganPage() {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
                     {p.kontak && (
-                      <span style={{ fontSize: '.78rem', color: 'var(--primary)' }}>📞 {p.kontak}</span>
+                      <a href={`https://wa.me/${p.kontak.replace(/^0/, '62')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '.78rem', color: 'var(--primary)', textDecoration: 'none' }}>📞 {p.kontak}</a>
                     )}
                     <span style={{ fontSize: '.82rem', fontWeight: 600, color: '#16a34a', marginLeft: 'auto' }}>Selengkapnya →</span>
                   </div>
@@ -329,7 +329,6 @@ const filterStyle: React.CSSProperties = {
 };
 
 function Pagination({ current, total, onChange }: { current: number; total: number; onChange: (p: number) => void }) {
-  if (total <= 1) return null;
   return (
     <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 20 }}>
       <button disabled={current === 1} onClick={() => onChange(current - 1)} style={pageBtn}>←</button>

@@ -116,7 +116,15 @@ export default function PelatihanDetailModal({ pelatihan, onClose }: Props) {
                 <Info icon="🏢" label="Penyelenggara" value={pelatihan.penyelenggara} />
                 <Info icon="👥" label="Target Peserta" value={pelatihan.target_peserta} />
                 <Info icon="🎯" label="Kuota" value={pelatihan.kuota ? `${pelatihan.kuota} orang` : undefined} />
-                <Info icon="📞" label="Kontak" value={pelatihan.kontak} />
+                {pelatihan.kontak && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: '1.1rem' }}>📞</span>
+                    <div>
+                      <div style={{ fontSize: '.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Kontak</div>
+                      <a href={`https://wa.me/${pelatihan.kontak.replace(/^0/, '62')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '.88rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>{pelatihan.kontak}</a>
+                    </div>
+                  </div>
+                )}
                 <Info icon="📊" label="Status" value={pelatihan.status} />
               </div>
               {pelatihan.status === 'Ditutup' && (
