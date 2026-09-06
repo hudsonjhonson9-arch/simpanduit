@@ -241,6 +241,7 @@ tbody tr:hover { background: var(--primary-light); }
   padding: 24px;
   animation: fadeIn .3s ease;
   height: 100%;
+  overflow: auto;
 }
 
 .page p {

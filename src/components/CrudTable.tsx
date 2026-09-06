@@ -93,7 +93,7 @@ export default function CrudTable({ module, title, fields, headerExtra }: Props)
   );
 
   return (
-    <div className="page" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <div className="page" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div className="toolbar">
         <h2>{title}</h2>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -155,32 +155,30 @@ export default function CrudTable({ module, title, fields, headerExtra }: Props)
           ))}
         </div>
       ) : (
-        <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-          <table>
-            <thead>
-              <tr>
-                {fields.map(f => <th key={f.key}>{f.label}</th>)}
-                {!readOnly && <th style={{ width: 120 }}>Aksi</th>}
+        <table>
+          <thead>
+            <tr>
+              {fields.map(f => <th key={f.key}>{f.label}</th>)}
+              {!readOnly && <th style={{ width: 120 }}>Aksi</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(r => (
+              <tr key={r.id}>
+                {fields.map(f => <td key={f.key}>{r[f.key]}</td>)}
+                {!readOnly && (
+                  <td>
+                    <button onClick={() => startEdit(r)} style={{ padding: '4px 12px', fontSize: '.8rem' }}>Edit</button>
+                    <button className="btn-danger" onClick={() => remove(r.id)} style={{ marginLeft: 4, padding: '4px 12px', fontSize: '.8rem' }}>Hapus</button>
+                  </td>
+                )}
               </tr>
-            </thead>
-            <tbody>
-              {filtered.map(r => (
-                <tr key={r.id}>
-                  {fields.map(f => <td key={f.key}>{r[f.key]}</td>)}
-                  {!readOnly && (
-                    <td>
-                      <button onClick={() => startEdit(r)} style={{ padding: '4px 12px', fontSize: '.8rem' }}>Edit</button>
-                      <button className="btn-danger" onClick={() => remove(r.id)} style={{ marginLeft: 4, padding: '4px 12px', fontSize: '.8rem' }}>Hapus</button>
-                    </td>
-                  )}
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={fields.length + (readOnly ? 0 : 1)} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: 20 }}>Belum ada data.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))}
+            {filtered.length === 0 && (
+              <tr><td colSpan={fields.length + (readOnly ? 0 : 1)} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: 20 }}>Belum ada data.</td></tr>
+            )}
+          </tbody>
+        </table>
       )}
     </div>
   );
