@@ -16,6 +16,11 @@ interface Lowongan {
   kontak_hrd: string;
   bidang_usaha: string;
   produk: string;
+  jenis_pekerjaan: string;
+  jumlah_lowongan: string;
+  jenis_kelamin: string;
+  pengalaman: string;
+  kondisi_fisik: string;
 }
 
 interface Pelatihan {
@@ -315,10 +320,41 @@ function LowonganCard({ data, onClick }: { data: Lowongan; onClick: () => void }
               {data.lokasi}
             </div>
           )}
+          {data.bidang_usaha && data.bidang_usaha !== '-' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+              {data.bidang_usaha}
+            </div>
+          )}
+          {data.jenis_pekerjaan && data.jenis_pekerjaan !== '-' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
+              &#128188; {data.jenis_pekerjaan}
+            </div>
+          )}
+          {data.jumlah_lowongan && data.jumlah_lowongan !== '-' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
+              &#128101; {data.jumlah_lowongan} orang
+            </div>
+          )}
           {data.pendidikan && data.pendidikan !== '-' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5" /></svg>
               {data.pendidikan}
+            </div>
+          )}
+          {data.pengalaman && data.pengalaman !== '-' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
+              &#128197; {data.pengalaman}
+            </div>
+          )}
+          {data.kondisi_fisik && data.kondisi_fisik !== '-' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
+              &#9878; {data.kondisi_fisik}
+            </div>
+          )}
+          {data.jenis_kelamin && data.jenis_kelamin !== '-' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--text-muted)' }}>
+              &#9792; {data.jenis_kelamin}
             </div>
           )}
           {data.deadline && data.deadline !== '-' && (

@@ -17,7 +17,15 @@ export default function RekomendasiPage() {
     setLoading(true);
     const res = await gasApi.list('RekomendasiPelatihan');
     if (res.success) {
-      const sorted = [...res.data].sort((a, b) =>
+      // Deduplicate by kompetensi+kecamatan — keep latest
+      const seen = new Map<string, any>();
+      res.data.forEach((r: any) => {
+        const key = `${r.kompetensi}|${r.kecamatan}`;
+        if (!seen.has(key) || new Date(r.created_at) > new Date(seen.get(key).created_at)) {
+          seen.set(key, r);
+        }
+      });
+      const sorted = [...seen.values()].sort((a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
       setData(sorted);

@@ -14,6 +14,11 @@ interface Lowongan {
   kontak_hrd: string;
   bidang_usaha: string;
   produk: string;
+  jenis_pekerjaan: string;
+  jumlah_lowongan: string;
+  jenis_kelamin: string;
+  pengalaman: string;
+  kondisi_fisik: string;
 }
 
 interface Props {
@@ -146,6 +151,12 @@ export default function LowonganDetailModal({ lowongan, onClose }: Props) {
                 <Detail label="Pendidikan" value={lowongan.pendidikan} />
                 <Detail label="Deadline" value={lowongan.deadline} />
                 <Detail label="Sumber" value={lowongan.sumber} />
+                <Detail label="Bidang Usaha" value={lowongan.bidang_usaha} />
+                <Detail label="Jenis Pekerjaan" value={lowongan.jenis_pekerjaan} />
+                <Detail label="Jumlah Lowongan" value={lowongan.jumlah_lowongan ? `${lowongan.jumlah_lowongan} orang` : undefined} />
+                <Detail label="Jenis Kelamin" value={lowongan.jenis_kelamin} />
+                <Detail label="Pengalaman" value={lowongan.pengalaman} />
+                <Detail label="Kondisi Fisik" value={lowongan.kondisi_fisik} />
               </div>
               {lowongan.kompetensi && lowongan.kompetensi !== '-' && (
                 <div style={{ marginBottom: 12 }}>

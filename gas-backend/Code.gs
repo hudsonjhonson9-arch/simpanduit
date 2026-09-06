@@ -8,7 +8,7 @@
  *  - DUDI         : id, nama_perusahaan, bidang_usaha, lokasi, kontak_hrd, produk, jumlah_kebutuhan, kompetensi_dibutuhkan, persyaratan, created_at
  *  - AKAD         : id, nama_perusahaan, lowongan, persyaratan, lokasi_kerja, cara_melamar, jadwal_rekrutmen, status, created_at
  *  - AKAN         : id, nama_p3mi, negara_tujuan, jabatan, gaji, persyaratan, dokumen, tahapan, kontak, created_at
- *  - KarirHub     : id, judul_lowongan, kompetensi, perusahaan, lokasi, deadline, created_at
+ *  - KarirHub     : id, judul_lowongan, kompetensi, perusahaan, lokasi, bidang_usaha, jenis_pekerjaan, jumlah_lowongan, deadline, jenis_kelamin, pendidikan, pengalaman, kondisi_fisik, keterampilan, sumber, created_at
  */
 
 const SPREADSHEET_ID = '1JSKrQxembEDcpCqr17YQ9YIqv5nEyxvQ9Cw1PNG5nmM';
@@ -20,7 +20,7 @@ const SHEET_SCHEMAS = {
   DUDI: ['id', 'nama_perusahaan', 'bidang_usaha', 'lokasi', 'kontak_hrd', 'produk', 'jumlah_kebutuhan', 'kompetensi_dibutuhkan', 'persyaratan', 'pendidikan', 'pengalaman', 'created_at'],
   AKAD: ['id', 'nama_perusahaan', 'lowongan', 'persyaratan', 'lokasi_kerja', 'cara_melamar', 'jadwal_rekrutmen', 'status', 'created_at'],
   AKAN: ['id', 'nama_p3mi', 'negara_tujuan', 'jabatan', 'gaji', 'persyaratan', 'dokumen', 'tahapan', 'kontak', 'created_at'],
-  KarirHub: ['id', 'judul_lowongan', 'kompetensi', 'perusahaan', 'lokasi', 'deadline', 'created_at'],
+  KarirHub: ['id', 'judul_lowongan', 'kompetensi', 'perusahaan', 'lokasi', 'bidang_usaha', 'jenis_pekerjaan', 'jumlah_lowongan', 'deadline', 'jenis_kelamin', 'pendidikan', 'pengalaman', 'kondisi_fisik', 'keterampilan', 'sumber', 'created_at'],
   RekomendasiPelatihan: ['id', 'kompetensi', 'kecamatan', 'jumlah_dudi_butuh', 'jumlah_lowongan', 'jumlah_minat', 'skor_total', 'prioritas', 'alasan', 'created_at'],
   Lamaran: ['id', 'lowongan_id', 'sumber', 'nama_lengkap', 'email', 'telepon', 'pendidikan', 'pengalaman', 'cv_filename', 'cv_drive_id', 'status', 'created_at'],
   InfoPelatihan: ['id', 'judul', 'deskripsi', 'kompetensi', 'lokasi', 'jadwal', 'penyelenggara', 'kontak', 'target_peserta', 'kuota', 'status', 'created_at'],
@@ -733,7 +733,12 @@ function lowonganPublik() {
       sumber: 'DUDI',
       kontak_hrd: d.kontak_hrd || '-',
       bidang_usaha: d.bidang_usaha || '-',
-      produk: d.produk || '-'
+      produk: d.produk || '-',
+      jenis_pekerjaan: d.jenis_pekerjaan || '-',
+      jumlah_lowongan: d.jumlah_kebutuhan || '-',
+      jenis_kelamin: d.jenis_kelamin || '-',
+      pengalaman: d.pengalaman || '-',
+      kondisi_fisik: d.kondisi_fisik || '-',
     });
   });
 
@@ -744,14 +749,19 @@ function lowonganPublik() {
       judul: k.judul_lowongan,
       perusahaan: k.perusahaan,
       lokasi: k.lokasi,
-      kompetensi: k.kompetensi,
+      kompetensi: k.kompetensi || k.keterampilan || '-',
       persyaratan: '-',
-      pendidikan: '-',
+      pendidikan: k.pendidikan || '-',
       deadline: k.deadline || '-',
       sumber: 'KarirHub',
       kontak_hrd: '-',
-      bidang_usaha: '-',
-      produk: '-'
+      bidang_usaha: k.bidang_usaha || '-',
+      produk: '-',
+      jenis_pekerjaan: k.jenis_pekerjaan || '-',
+      jumlah_lowongan: k.jumlah_lowongan || '-',
+      jenis_kelamin: k.jenis_kelamin || '-',
+      pengalaman: k.pengalaman || '-',
+      kondisi_fisik: k.kondisi_fisik || '-',
     });
   });
 
