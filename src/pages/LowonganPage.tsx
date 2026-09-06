@@ -43,7 +43,7 @@ export default function LowonganPage() {
   const [selectedPelatihan, setSelectedPelatihan] = useState<Pelatihan | null>(null);
   const [lowPage, setLowPage] = useState(1);
   const [pelPage, setPelPage] = useState(1);
-  const PAGE_SIZE = 6;
+  const PAGE_SIZE = 3;
 
   useEffect(() => {
     Promise.all([
