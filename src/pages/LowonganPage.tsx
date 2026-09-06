@@ -43,7 +43,7 @@ export default function LowonganPage() {
   const [selectedPelatihan, setSelectedPelatihan] = useState<Pelatihan | null>(null);
   const [lowPage, setLowPage] = useState(1);
   const [pelPage, setPelPage] = useState(1);
-  const PAGE_SIZE = 3;
+  const PAGE_SIZE = 6;
 
   useEffect(() => {
     Promise.all([
@@ -163,7 +163,7 @@ export default function LowonganPage() {
                 <LowonganCard key={l.id} data={l} onClick={() => setSelected(l)} />
               ))}
             </div>
-            {lowTotal > 1 && (
+            {lowTotal >= 1 && (
               <Pagination current={lowPage} total={lowTotal} onChange={setLowPage} />
             )}
           </>
@@ -223,7 +223,7 @@ export default function LowonganPage() {
                 </div>
               ))}
             </div>
-            {pelTotal > 1 && (
+            {pelTotal >= 1 && (
               <Pagination current={pelPage} total={pelTotal} onChange={setPelPage} />
             )}
           </>
