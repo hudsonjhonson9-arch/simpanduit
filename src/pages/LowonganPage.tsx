@@ -216,7 +216,7 @@ export default function LowonganPage() {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
                     {p.kontak && (
-                      <a href={`https://wa.me/${p.kontak.replace(/^0/, '62')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '.78rem', color: 'var(--primary)', textDecoration: 'none' }}>📞 {p.kontak}</a>
+                      <a href={`https://wa.me/${String(p.kontak).replace(/^0/, '62')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '.78rem', color: 'var(--primary)', textDecoration: 'none' }}>📞 {p.kontak}</a>
                     )}
                     <span style={{ fontSize: '.82rem', fontWeight: 600, color: '#16a34a', marginLeft: 'auto' }}>Selengkapnya →</span>
                   </div>

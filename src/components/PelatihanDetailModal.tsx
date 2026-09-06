@@ -121,7 +121,7 @@ export default function PelatihanDetailModal({ pelatihan, onClose }: Props) {
                     <span style={{ fontSize: '1.1rem' }}>📞</span>
                     <div>
                       <div style={{ fontSize: '.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Kontak</div>
-                      <a href={`https://wa.me/${pelatihan.kontak.replace(/^0/, '62')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '.88rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>{pelatihan.kontak}</a>
+                      <a href={`https://wa.me/${String(pelatihan.kontak).replace(/^0/, '62')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '.88rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>{pelatihan.kontak}</a>
                     </div>
                   </div>
                 )}
