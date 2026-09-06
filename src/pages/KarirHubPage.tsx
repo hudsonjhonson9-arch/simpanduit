@@ -17,7 +17,8 @@ export default function KarirHubPage() {
         { key: 'pendidikan', label: 'Pendidikan Minimal' },
         { key: 'pengalaman', label: 'Pengalaman' },
         { key: 'kondisi_fisik', label: 'Kondisi Fisik' },
-        { key: 'kompetensi', label: 'Keterampilan' },
+        { key: 'kompetensi', label: 'Kompetensi' },
+        { key: 'keterampilan', label: 'Keterampilan' },
         { key: 'sumber', label: 'Sumber' },
       ]}
     />

@@ -45,7 +45,16 @@ const REPORTS: ReportDef[] = [
       { key: 'perusahaan', label: 'Perusahaan' },
       { key: 'kompetensi', label: 'Kompetensi' },
       { key: 'lokasi', label: 'Lokasi' },
-      { key: 'deadline', label: 'Deadline' }
+      { key: 'bidang_usaha', label: 'Bidang Usaha' },
+      { key: 'jenis_pekerjaan', label: 'Jenis Pekerjaan' },
+      { key: 'jumlah_lowongan', label: 'Jumlah Lowongan' },
+      { key: 'deadline', label: 'Deadline' },
+      { key: 'jenis_kelamin', label: 'Jenis Kelamin' },
+      { key: 'pendidikan', label: 'Pendidikan' },
+      { key: 'pengalaman', label: 'Pengalaman' },
+      { key: 'kondisi_fisik', label: 'Kondisi Fisik' },
+      { key: 'keterampilan', label: 'Keterampilan' },
+      { key: 'sumber', label: 'Sumber' }
     ]
   },
   {
