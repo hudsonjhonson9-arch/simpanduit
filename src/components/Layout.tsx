@@ -82,6 +82,8 @@ const styles = {
     transition: 'margin-left .25s ease',
     display: 'flex',
     flexDirection: 'column' as const,
+    minHeight: 0,
+    overflow: 'hidden',
   },
   topbar: {
     height: 'var(--header-height)',
