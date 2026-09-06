@@ -93,7 +93,7 @@ export default function CrudTable({ module, title, fields, headerExtra }: Props)
   );
 
   return (
-    <div className="page">
+    <div className="page" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <div className="toolbar">
         <h2>{title}</h2>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -155,7 +155,7 @@ export default function CrudTable({ module, title, fields, headerExtra }: Props)
           ))}
         </div>
       ) : (
-        <div style={{ overflowX: 'auto', maxHeight: '70vh', overflowY: 'auto' }}>
+        <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
           <table>
             <thead>
               <tr>

@@ -105,6 +105,9 @@ const styles = {
   },
   content: {
     flex: 1,
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column' as const,
   },
 };
 
