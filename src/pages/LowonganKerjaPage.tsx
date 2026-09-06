@@ -104,7 +104,7 @@ export default function LowonganKerjaPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
-        <div>
+    <div className="page">
           <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>Lowongan Kerja</h2>
           <p style={{ margin: '4px 0 0', fontSize: '.82rem', color: 'var(--text-muted)' }}>
             Gabungan data dari DUDI dan KarirHub
