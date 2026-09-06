@@ -23,7 +23,8 @@ const SHEET_SCHEMAS = {
   KarirHub: ['id', 'judul_lowongan', 'kompetensi', 'perusahaan', 'lokasi', 'deadline', 'created_at'],
   RekomendasiPelatihan: ['id', 'kompetensi', 'kecamatan', 'jumlah_dudi_butuh', 'jumlah_lowongan', 'jumlah_minat', 'skor_total', 'prioritas', 'alasan', 'created_at'],
   Lamaran: ['id', 'lowongan_id', 'sumber', 'nama_lengkap', 'email', 'telepon', 'pendidikan', 'pengalaman', 'cv_filename', 'cv_drive_id', 'status', 'created_at'],
-  InfoPelatihan: ['id', 'judul', 'deskripsi', 'kompetensi', 'lokasi', 'jadwal', 'penyelenggara', 'kontak', 'target_peserta', 'kuota', 'status', 'created_at']
+  InfoPelatihan: ['id', 'judul', 'deskripsi', 'kompetensi', 'lokasi', 'jadwal', 'penyelenggara', 'kontak', 'target_peserta', 'kuota', 'status', 'created_at'],
+  PendaftaranPelatihan: ['id', 'pelatihan_id', 'pelatihan_judul', 'nama_lengkap', 'email', 'telepon', 'pendidikan', 'pekerjaan', 'status', 'created_at']
 };
 
 // Modul yang butuh login untuk semua aksi selain 'login'
@@ -142,6 +143,7 @@ function handleRequest(e) {
     if (action === 'lamarLowongan') return jsonResponse(lamarLowongan(body));
     if (action === 'rekomendasiPublik') return jsonResponse(rekomendasiPublik());
     if (action === 'infoPelatihanPublik') return jsonResponse(infoPelatihanPublik());
+    if (action === 'daftarPelatihan') return jsonResponse(daftarPelatihan(body));
 
     // Semua aksi CRUD generik: create / read / update / delete
     const module = params.module || body.module;
@@ -833,6 +835,28 @@ function infoPelatihanPublik() {
   const all = getSheetData('InfoPelatihan');
   const data = all.filter(r => String(r.status || '').toLowerCase() !== 'ditutup');
   return { success: true, data: data };
+}
+
+function daftarPelatihan(body) {
+  const { pelatihan_id, pelatihan_judul, nama_lengkap, email, telepon, pendidikan, pekerjaan } = body;
+  if (!nama_lengkap || !email || !telepon) {
+    return { success: false, error: 'Nama, email, dan telepon wajib diisi.' };
+  }
+  const record = {
+    pelatihan_id: pelatihan_id || '',
+    pelatihan_judul: pelatihan_judul || '',
+    nama_lengkap: nama_lengkap,
+    email: email,
+    telepon: telepon,
+    pendidikan: pendidikan || '',
+    pekerjaan: pekerjaan || '',
+    status: 'Baru'
+  };
+  const id = Utilities.getUuid();
+  record.id = id;
+  record.created_at = new Date().toISOString();
+  appendRow('PendaftaranPelatihan', record);
+  return { success: true, id: id, message: 'Pendaftaran berhasil dikirim.' };
 }
 
 function lamarLowongan(body) {

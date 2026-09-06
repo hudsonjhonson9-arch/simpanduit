@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { gasApi } from '../api/gasClient';
 import LowonganDetailModal from '../components/LowonganDetailModal';
+import PelatihanDetailModal from '../components/PelatihanDetailModal';
 
 interface Lowongan {
   id: string;
@@ -39,6 +40,10 @@ export default function LowonganPage() {
   const [filterSumber, setFilterSumber] = useState('');
   const [selected, setSelected] = useState<Lowongan | null>(null);
   const [pelatihan, setPelatihan] = useState<Pelatihan[]>([]);
+  const [selectedPelatihan, setSelectedPelatihan] = useState<Pelatihan | null>(null);
+  const [lowPage, setLowPage] = useState(1);
+  const [pelPage, setPelPage] = useState(1);
+  const PAGE_SIZE = 6;
 
   useEffect(() => {
     Promise.all([
@@ -53,6 +58,17 @@ export default function LowonganPage() {
   const lokasiList = [...new Set(lowongan.map(l => l.lokasi).filter(Boolean))];
   const sumberList = [...new Set(lowongan.map(l => l.sumber).filter(Boolean))];
 
+  // reset page on filter/search change
+  const [prevSearch, setPrevSearch] = useState('');
+  const [prevLokasi, setPrevLokasi] = useState('');
+  const [prevSumber, setPrevSumber] = useState('');
+  if (search !== prevSearch || filterLokasi !== prevLokasi || filterSumber !== prevSumber) {
+    setLowPage(1);
+    setPrevSearch(search);
+    setPrevLokasi(filterLokasi);
+    setPrevSumber(filterSumber);
+  }
+
   const filtered = lowongan.filter(l => {
     const matchSearch = !search ||
       l.judul.toLowerCase().includes(search.toLowerCase()) ||
@@ -62,6 +78,12 @@ export default function LowonganPage() {
     const matchSumber = !filterSumber || l.sumber === filterSumber;
     return matchSearch && matchLokasi && matchSumber;
   });
+
+  const lowTotal = Math.ceil(filtered.length / PAGE_SIZE);
+  const lowpaged = filtered.slice((lowPage - 1) * PAGE_SIZE, lowPage * PAGE_SIZE);
+
+  const pelTotal = Math.ceil(pelatihan.length / PAGE_SIZE);
+  const pelpaged = pelatihan.slice((pelPage - 1) * PAGE_SIZE, pelPage * PAGE_SIZE);
 
   return (
     <div>
@@ -135,16 +157,22 @@ export default function LowonganPage() {
             </p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
-            {filtered.map(l => (
-              <LowonganCard key={l.id} data={l} onClick={() => setSelected(l)} />
-            ))}
-          </div>
+          <>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+              {lowpaged.map(l => (
+                <LowonganCard key={l.id} data={l} onClick={() => setSelected(l)} />
+              ))}
+            </div>
+            {lowTotal > 1 && (
+              <Pagination current={lowPage} total={lowTotal} onChange={setLowPage} />
+            )}
+          </>
         )}
       </div>
 
       {/* Modal */}
       {selected && <LowonganDetailModal lowongan={selected} onClose={() => setSelected(null)} />}
+      {selectedPelatihan && <PelatihanDetailModal pelatihan={selectedPelatihan} onClose={() => setSelectedPelatihan(null)} />}
 
       {/* Info Pelatihan Section */}
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px 40px' }}>
@@ -159,34 +187,46 @@ export default function LowonganPage() {
             Belum ada info pelatihan tersedia
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
-            {pelatihan.map(p => (
-              <div key={p.id} className="card" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '.72rem', fontWeight: 600, padding: '2px 8px', borderRadius: 12, background: '#dcfce7', color: '#16a34a' }}>
-                    {p.kompetensi || 'Umum'}
-                  </span>
-                  <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>{p.jadwal || '-'}</span>
+          <>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
+              {pelpaged.map(p => (
+                <div key={p.id} className="card" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 8, cursor: 'pointer', transition: 'var(--transition)', border: '1px solid var(--border)' }}
+                  onClick={() => setSelectedPelatihan(p)}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.borderColor = '#16a34a'; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'var(--border)'; }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '.72rem', fontWeight: 600, padding: '2px 8px', borderRadius: 12, background: '#dcfce7', color: '#16a34a' }}>
+                      {p.kompetensi || 'Umum'}
+                    </span>
+                    <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>{p.jadwal || '-'}</span>
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>
+                    {p.judul}
+                  </h3>
+                  {p.deskripsi && (
+                    <p style={{ margin: 0, fontSize: '.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                      {p.deskripsi.length > 100 ? p.deskripsi.slice(0, 100) + '...' : p.deskripsi}
+                    </p>
+                  )}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 'auto' }}>
+                    <div style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>📍 {p.lokasi || '-'}</div>
+                    <div style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>🏢 {p.penyelenggara || '-'}</div>
+                    <div style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>👥 Kuota: {p.kuota || '-'}</div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                    {p.kontak && (
+                      <span style={{ fontSize: '.78rem', color: 'var(--primary)' }}>📞 {p.kontak}</span>
+                    )}
+                    <span style={{ fontSize: '.82rem', fontWeight: 600, color: '#16a34a', marginLeft: 'auto' }}>Selengkapnya →</span>
+                  </div>
                 </div>
-                <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>
-                  {p.judul}
-                </h3>
-                {p.deskripsi && (
-                  <p style={{ margin: 0, fontSize: '.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                    {p.deskripsi.length > 100 ? p.deskripsi.slice(0, 100) + '...' : p.deskripsi}
-                  </p>
-                )}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 'auto' }}>
-                  <div style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>📍 {p.lokasi || '-'}</div>
-                  <div style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>🏢 {p.penyelenggara || '-'}</div>
-                  <div style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>👥 Kuota: {p.kuota || '-'}</div>
-                </div>
-                {p.kontak && (
-                  <div style={{ fontSize: '.78rem', color: 'var(--primary)' }}>📞 {p.kontak}</div>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            {pelTotal > 1 && (
+              <Pagination current={pelPage} total={pelTotal} onChange={setPelPage} />
+            )}
+          </>
         )}
       </div>
     </div>
@@ -286,4 +326,28 @@ const filterStyle: React.CSSProperties = {
   padding: '8px 12px', borderRadius: 'var(--radius-sm)',
   border: '1px solid var(--border)', background: 'var(--surface)',
   fontSize: '.85rem', color: 'var(--text)', outline: 'none', cursor: 'pointer',
+};
+
+function Pagination({ current, total, onChange }: { current: number; total: number; onChange: (p: number) => void }) {
+  if (total <= 1) return null;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 20 }}>
+      <button disabled={current === 1} onClick={() => onChange(current - 1)} style={pageBtn}>←</button>
+      {Array.from({ length: total }, (_, i) => (
+        <button key={i + 1} onClick={() => onChange(i + 1)} style={{
+          ...pageBtn,
+          background: current === i + 1 ? 'var(--primary)' : 'var(--surface)',
+          color: current === i + 1 ? '#fff' : 'var(--text)',
+          fontWeight: current === i + 1 ? 700 : 400,
+        }}>{i + 1}</button>
+      ))}
+      <button disabled={current === total} onClick={() => onChange(current + 1)} style={pageBtn}>→</button>
+    </div>
+  );
+}
+
+const pageBtn: React.CSSProperties = {
+  padding: '6px 12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)',
+  background: 'var(--surface)', color: 'var(--text)', fontSize: '.85rem', cursor: 'pointer',
+  transition: 'var(--transition)',
 };

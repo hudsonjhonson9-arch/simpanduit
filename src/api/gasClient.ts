@@ -78,5 +78,8 @@ export const gasApi = {
     gasRequest({ action: 'infoPelatihanPublik' }),
 
   lamarLowongan: (data: Record<string, any>) =>
-    gasRequest({ action: 'lamarLowongan', ...data })
+    gasRequest({ action: 'lamarLowongan', ...data }),
+
+  daftarPelatihan: (data: Record<string, any>) =>
+    gasRequest({ action: 'daftarPelatihan', ...data })
 };
