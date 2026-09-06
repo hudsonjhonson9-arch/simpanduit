@@ -20,7 +20,7 @@ const menu = [
 ];
 
 const styles = {
-  layout: { display: 'flex', minHeight: '100vh' },
+  layout: { display: 'flex', height: '100vh' },
   overlay: (open: boolean) => ({
     position: 'fixed' as const,
     inset: 0,
