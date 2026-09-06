@@ -43,6 +43,9 @@ export default function LowonganPage() {
   const [selectedPelatihan, setSelectedPelatihan] = useState<Pelatihan | null>(null);
   const [lowPage, setLowPage] = useState(1);
   const [pelPage, setPelPage] = useState(1);
+  const [pelSearch, setPelSearch] = useState('');
+  const [filterPelLokasi, setFilterPelLokasi] = useState('');
+  const [filterPelStatus, setFilterPelStatus] = useState('');
   const PAGE_SIZE = 6;
 
   useEffect(() => {
@@ -82,8 +85,21 @@ export default function LowonganPage() {
   const lowTotal = Math.ceil(filtered.length / PAGE_SIZE);
   const lowpaged = filtered.slice((lowPage - 1) * PAGE_SIZE, lowPage * PAGE_SIZE);
 
-  const pelTotal = Math.ceil(pelatihan.length / PAGE_SIZE);
-  const pelpaged = pelatihan.slice((pelPage - 1) * PAGE_SIZE, pelPage * PAGE_SIZE);
+  const pelLokasiList = [...new Set(pelatihan.map(p => p.lokasi).filter(Boolean))];
+  const pelStatusList = [...new Set(pelatihan.map(p => p.status).filter(Boolean))];
+
+  const filteredPel = pelatihan.filter(p => {
+    const matchSearch = !pelSearch ||
+      p.judul.toLowerCase().includes(pelSearch.toLowerCase()) ||
+      p.kompetensi?.toLowerCase().includes(pelSearch.toLowerCase()) ||
+      p.penyelenggara?.toLowerCase().includes(pelSearch.toLowerCase());
+    const matchLokasi = !filterPelLokasi || p.lokasi === filterPelLokasi;
+    const matchStatus = !filterPelStatus || p.status === filterPelStatus;
+    return matchSearch && matchLokasi && matchStatus;
+  });
+
+  const pelTotal = Math.ceil(filteredPel.length / PAGE_SIZE);
+  const pelpaged = filteredPel.slice((pelPage - 1) * PAGE_SIZE, pelPage * PAGE_SIZE);
 
   return (
     <div>
@@ -179,9 +195,29 @@ export default function LowonganPage() {
         <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 4, color: 'var(--text)' }}>
           Info Pelatihan
         </h2>
-        <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', marginBottom: 20 }}>
+        <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', marginBottom: 12 }}>
           Pelatihan dan pengembangan kompetensi untuk masyarakat
         </p>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            placeholder="Cari pelatihan, kompetensi, penyelenggara..."
+            value={pelSearch}
+            onChange={e => { setPelSearch(e.target.value); setPelPage(1); }}
+            style={{ ...filterStyle, minWidth: 200, flex: '1 1 200px' }}
+          />
+          <select value={filterPelLokasi} onChange={e => { setFilterPelLokasi(e.target.value); setPelPage(1); }} style={filterStyle}>
+            <option value="">Semua Lokasi</option>
+            {pelLokasiList.map(l => <option key={l} value={l}>{l}</option>)}
+          </select>
+          <select value={filterPelStatus} onChange={e => { setFilterPelStatus(e.target.value); setPelPage(1); }} style={filterStyle}>
+            <option value="">Semua Status</option>
+            {pelStatusList.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <span style={{ fontSize: '.82rem', color: 'var(--text-muted)', alignSelf: 'center', marginLeft: 'auto' }}>
+            {filteredPel.length} pelatihan ditemukan
+          </span>
+        </div>
         {pelatihan.length === 0 ? (
           <div className="card" style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
             Belum ada info pelatihan tersedia
