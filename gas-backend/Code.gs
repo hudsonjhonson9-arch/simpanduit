@@ -979,8 +979,9 @@ function getSheetData(name) {
 
 function appendRow(module, record) {
   const sheet = getSheet(module);
-  const headers = SHEET_SCHEMAS[module];
-  const row = headers.map(h => record[h] !== undefined ? record[h] : '');
+  const values = sheet.getDataRange().getValues();
+  const sheetHeaders = values.length > 0 ? values[0] : SHEET_SCHEMAS[module];
+  const row = sheetHeaders.map(h => record[h] !== undefined ? record[h] : '');
   sheet.appendRow(row);
 }
 
