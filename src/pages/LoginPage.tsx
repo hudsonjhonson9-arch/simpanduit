@@ -45,9 +45,9 @@ export default function LoginPage() {
         <div className="card" style={{ padding: 36 }}>
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
             <div className="login-logo">S</div>
-            <h2 style={{ margin: '8px 0 4px', fontSize: '1.5rem', fontWeight: 700 }}>SIMPANDUIT</h2>
+            <h2 style={{ margin: '8px 0 4px', fontSize: '1.5rem', fontWeight: 700 }}>SIMATA DUIT</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '.8rem', lineHeight: 1.5 }}>
-              Sistem Informasi Mengintegrasikan<br />Talenta dengan Dunia Industri
+              SISTEM MANAJEMEN TALENTA KERJA WANITA<br />MENGINTEGRASIKAN DENGAN DUNIA INDUSTRI
             </p>
           </div>
 
