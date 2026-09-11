@@ -4,6 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import { canWrite } from '../config/permissions';
 import { useToast } from './Toast';
 
+// ponytail: strips ISO time part, shows "21 Oct 2026"
+function fmtDate(v: unknown) {
+  if (typeof v !== 'string') return v;
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? v : d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 interface Field {
   key: string;
   label: string;
@@ -165,7 +172,7 @@ export default function CrudTable({ module, title, fields, headerExtra }: Props)
           <tbody>
             {filtered.map(r => (
               <tr key={r.id}>
-                {fields.map(f => <td key={f.key}>{r[f.key]}</td>)}
+                {fields.map(f => <td key={f.key}>{fmtDate(r[f.key])}</td>)}
                 {!readOnly && (
                   <td>
                     <button onClick={() => startEdit(r)} style={{ padding: '4px 12px', fontSize: '.8rem' }}>Edit</button>

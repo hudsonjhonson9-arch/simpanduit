@@ -62,7 +62,7 @@ export default function BerandaPage() {
     <div className="page">
       <h2>Beranda</h2>
       <p>
-        SIMPANDUIT mengintegrasikan data pencari kerja, dunia usaha/industri (DUDI),
+        SIMATA DUIT mengintegrasikan data pencari kerja, dunia usaha/industri (DUDI),
         penempatan kerja dalam negeri (AKAD), penempatan kerja luar negeri (AKAN/CPMI),
         dan lowongan KarirHub untuk menghasilkan rekomendasi pelatihan berbasis kebutuhan nyata pasar kerja.
       </p>

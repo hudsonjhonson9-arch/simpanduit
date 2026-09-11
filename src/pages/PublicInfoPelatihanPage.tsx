@@ -42,7 +42,7 @@ export default function PublicInfoPelatihanPage() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <a href="/" className="flex items-center gap-2 text-indigo-700 font-bold text-xl">
             <span className="bg-indigo-600 text-white rounded-lg w-8 h-8 flex items-center justify-center text-sm">S</span>
-            SIMPANDUIT
+            SIMATA DUIT
           </a>
           <a href="/login" className="text-sm text-gray-600 hover:text-indigo-600">Masuk</a>
         </div>
@@ -86,7 +86,7 @@ export default function PublicInfoPelatihanPage() {
       </main>
 
       <footer className="bg-white border-t mt-16 py-6 text-center text-sm text-gray-400">
-        &copy; {new Date().getFullYear()} SIMPANDUIT — Dinas Tenaga Kerja dan Perindustrian Kabupaten Sumba Barat
+        &copy; {new Date().getFullYear()} SIMATA DUIT — Dinas Tenaga Kerja dan Perindustrian Kabupaten Sumba Barat
       </footer>
     </div>
   );

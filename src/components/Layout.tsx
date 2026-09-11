@@ -153,7 +153,7 @@ export default function Layout() {
 
       <aside style={styles.sidebar(sidebarOpen)}>
         <div style={styles.header}>
-          <h3 style={styles.brand}>SIMPANDUIT</h3>
+          <h3 style={styles.brand}>SIMATA DUIT</h3>
         </div>
         <nav style={styles.nav}>
           {visibleMenu.map(m => (

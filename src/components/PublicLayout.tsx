@@ -27,7 +27,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             fontWeight: 700,
             fontSize: '.85rem',
           }}>S</span>
-          <span style={{ fontWeight: 700, fontSize: '1.05rem', letterSpacing: '-0.01em' }}>SIMPANDUIT</span>
+          <span style={{ fontWeight: 700, fontSize: '1.05rem', letterSpacing: '-0.01em' }}>SIMATA DUIT</span>
         </Link>
         <Link to="/login" style={{
           fontSize: '.85rem',
@@ -57,7 +57,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         background: 'var(--surface)',
       }}>
         <p style={{ margin: 0 }}>
-          &copy; {new Date().getFullYear()} SIMPANDUIT &mdash; Dinas Tenaga Kerja dan Perindustrian Kabupaten Sumba Barat
+          &copy; {new Date().getFullYear()} SIMATA DUIT &mdash; Dinas Tenaga Kerja dan Perindustrian Kabupaten Sumba Barat
         </p>
       </footer>
     </div>

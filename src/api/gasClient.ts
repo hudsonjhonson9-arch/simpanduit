@@ -5,7 +5,7 @@ const GAS_URL = import.meta.env.VITE_GAS_URL as string;
 export type Module = 'Users' | 'PencariKerja' | 'DUDI' | 'AKAD' | 'AKAN' | 'KarirHub' | 'RekomendasiPelatihan' | 'InfoPelatihan';
 
 function getToken(): string | null {
-  return localStorage.getItem('simpanduit_token');
+  return localStorage.getItem('simataduit_token');
 }
 
 /**

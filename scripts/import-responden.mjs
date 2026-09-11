@@ -32,23 +32,23 @@ const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
 console.log(`Sheet: ${sheetName}, ${rows.length} rows`);
 
 // Map Excel columns to PencariKerja fields
-// Adjust column names if your Excel uses different headers
+// Based on actual Google Forms headers from Identifikasi Minat Kerja survey
 const mapped = rows
-  .filter(r => r['Nama Lengkap'] || r['Nama'])
+  .filter(r => r['Nama Lengkap '] || r['Nama Lengkap'] || r['Nama'])
   .map(r => ({
-    nama: r['Nama Lengkap'] || r['Nama'] || '',
-    umur: r['Usia'] || r['Umur'] || '',
-    kecamatan: r['Kecamatan'] || '',
-    pendidikan: r['Pendidikan'] || '',
-    status: r['Status'] || '',
-    minat_kerja: r['Minat'] || r['Minat Kerja'] || '',
-    minat_pelatihan: r['Minat'] || r['Minat Kerja'] || '',
-    jenis_kelamin: 'Perempuan',
-    desa: r['Desa'] || '',
-    pengalaman: r['Pengalaman'] || '',
-    keterampilan: r['Keterampilan'] || '',
-    pelatihan_pernah_diikuti: r['Pelatihan'] || r['Pelatihan Pernah Diikuti'] || '',
-    kesediaan_pelatihan: r['Kesediaan'] || r['Kesediaan Pelatihan'] || 'Ya'
+    nama: (r['Nama Lengkap '] || r['Nama Lengkap'] || r['Nama'] || '').trim(),
+    umur: parseInt(String(r['Usia '] || r['Usia'] || '0').replace(/\D/g, '')) || 0,
+    kecamatan: (r['Kecamatan'] || '').trim(),
+    desa: (r['Kelurahan/Desa'] || '').trim(),
+    pendidikan: (r['Pendidikan Terakhir'] || '').trim(),
+    jenis_kelamin: (r['Jenis Kelamin'] || 'Perempuan').trim(),
+    status: (r['Status Pekerjaan Saat Ini'] || '').trim(),
+    minat_kerja: (r['Bidang pekerjaan apa yang paling Anda minati? '] || r['Bidang pekerjaan apa yang paling Anda minati?'] || '').trim(),
+    minat_pelatihan: (r['Posisi pekerjaan apa yang paling Anda minati? '] || r['Posisi pekerjaan apa yang paling Anda minati?'] || '').trim(),
+    keterampilan: (r['Keterampilan apa yang sudah Anda miliki? '] || r['Keterampilan apa yang sudah Anda miliki?'] || '').trim(),
+    pelatihan_pernah_diikuti: (r['Pernah mengikuti Pelatihan'] || '').trim(),
+    pengalaman: (r['Pelatihan kerja apa yang pernah Anda ikuti? '] || r['Pelatihan kerja apa yang pernah Anda ikuti?'] || '').trim(),
+    kesediaan_pelatihan: (r['Apakah Anda bersedia mengikuti pelatihan untuk memenuhi persyaratan lowongan tersebut? '] || r['Apakah Anda bersedia mengikuti pelatihan untuk memenuhi persyaratan lowongan tersebut?'] || 'Ya').trim()
   }));
 
 console.log(`Mapped ${mapped.length} records.`);

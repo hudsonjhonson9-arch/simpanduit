@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem('simpanduit_user');
+    const saved = localStorage.getItem('simataduit_user');
     if (saved) setUser(JSON.parse(saved));
     setLoading(false);
   }, []);
@@ -32,8 +32,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(username: string, password: string) {
     const res = await gasApi.login(username, password);
     if (res.success) {
-      localStorage.setItem('simpanduit_token', res.token);
-      localStorage.setItem('simpanduit_user', JSON.stringify(res.user));
+      localStorage.setItem('simataduit_token', res.token);
+      localStorage.setItem('simataduit_user', JSON.stringify(res.user));
       setUser(res.user);
       return { success: true };
     }
@@ -42,8 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   function logout() {
     gasApi.logout();
-    localStorage.removeItem('simpanduit_token');
-    localStorage.removeItem('simpanduit_user');
+    localStorage.removeItem('simataduit_token');
+    localStorage.removeItem('simataduit_user');
     setUser(null);
   }
 

@@ -89,7 +89,7 @@ export default function LaporanPage() {
       const doc = new jsPDF({ orientation: 'landscape' });
 
       doc.setFontSize(14);
-      doc.text('SIMPANDUIT — ' + report.title, 14, 15);
+      doc.text('SIMATA DUIT — ' + report.title, 14, 15);
       doc.setFontSize(9);
       doc.text('Dicetak: ' + new Date().toLocaleString('id-ID'), 14, 21);
 
