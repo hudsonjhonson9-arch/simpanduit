@@ -5,8 +5,8 @@ import { canWrite } from '../config/permissions';
 import { useToast } from './Toast';
 
 // ponytail: strips ISO time part, shows "21 Oct 2026"
-function fmtDate(v: unknown) {
-  if (typeof v !== 'string') return v;
+function fmtDate(v: unknown): React.ReactNode {
+  if (typeof v !== 'string') return String(v ?? '');
   const d = new Date(v);
   return isNaN(d.getTime()) ? v : d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 }
