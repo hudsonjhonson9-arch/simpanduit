@@ -91,7 +91,7 @@ export default function LaporanPage() {
       doc.setFontSize(14);
       doc.text('SIMATA DUIT — ' + report.title, 14, 15);
       doc.setFontSize(9);
-      doc.text('Dicetak: ' + new Date().toLocaleString('id-ID'), 14, 21);
+      doc.text('Dicetak: ' + fmtDateTime(new Date()), 14, 21);
 
       autoTable(doc, {
         startY: 26,
@@ -130,7 +130,19 @@ export default function LaporanPage() {
   }
 
   function dateStamp() {
-    return new Date().toISOString().slice(0, 10);
+    const d = new Date();
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  }
+
+  function fmtDateTime(d: Date): string {
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const time = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    return `${dd}-${mm}-${yyyy} ${time}`;
   }
 
   return (

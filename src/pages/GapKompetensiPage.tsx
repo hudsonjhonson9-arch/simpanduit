@@ -49,9 +49,9 @@ export default function GapKompetensiPage() {
     <div className="page">
       <h2>Analisis Kesesuaian Kebutuhan Industri & Kompetensi Masyarakat</h2>
       <p>
-        Menganalisis kesesuaian antara kebutuhan industri (DUDI) dengan kompetensi masyarakat
-        (Pencari Kerja) per kelompok posisi. Menampilkan jumlah sesuai, gap kompetensi,
-        dan prioritas pelatihan.
+        Diambil dari hasil Identifikasi Kebutuhan &amp; Rekomendasi Pelatihan (Lowongan Kerja: DUDI + KarirHub,
+        dikelompokkan per Jenis Pekerjaan), lalu ditambah kolom kesesuaian dan gap kompetensi hasil pencocokan
+        dengan data Pencari Kerja.
       </p>
 
       <div className="toolbar" style={{ marginTop: 16 }}>
@@ -71,13 +71,13 @@ export default function GapKompetensiPage() {
 
       {results && (
         results.length === 0 ? (
-          <p>Belum ada data yang cukup untuk dianalisis (butuh data DUDI dan Pencari Kerja).</p>
+          <p>Belum ada data yang cukup untuk dianalisis (butuh data DUDI, KarirHub, dan/atau Pencari Kerja).</p>
         ) : (
           <table style={{ marginTop: 8 }}>
             <thead>
               <tr>
                 <th>#</th>
-                <th>Divisi / Kategori Lowongan</th>
+                <th>Jenis Pekerjaan</th>
                 <th>Total Kuota</th>
                 <th>Minat Responden</th>
                 <th>Sesuai</th>

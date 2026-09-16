@@ -47,9 +47,9 @@ export default function IdentifikasiPage() {
     <div className="page">
       <h2>Identifikasi Kebutuhan Pelatihan</h2>
       <p>
-        Sistem menggabungkan data kebutuhan industri (DUDI), lowongan tersedia (KarirHub),
-        dan minat masyarakat (Pendataan Pencari Kerja) untuk menghasilkan prioritas kompetensi
-        pelatihan. Skor dihitung dari kombinasi ketiga indikator tersebut.
+        Sistem menggabungkan data kebutuhan industri (DUDI), lowongan tersedia (KarirHub — dikelompokkan
+        berdasarkan Jenis Pekerjaan), dan minat masyarakat (Pendataan Pencari Kerja) per bidang pekerjaan
+        untuk menghasilkan prioritas pelatihan. Skor dihitung dari kombinasi ketiga indikator tersebut.
       </p>
 
       <div className="toolbar" style={{ marginTop: 16 }}>
@@ -74,7 +74,7 @@ export default function IdentifikasiPage() {
           <table style={{ marginTop: 8 }}>
             <thead>
               <tr>
-                <th>Kompetensi</th>
+                <th>Jenis Pekerjaan</th>
                 <th>Kebutuhan DUDI</th>
                 <th>Lowongan KarirHub</th>
                 <th>Minat Masyarakat</th>

@@ -23,7 +23,7 @@ const FIELDS = [
   { key: 'judul', label: 'Judul Lowongan' },
   { key: 'perusahaan', label: 'Perusahaan' },
   { key: 'lokasi', label: 'Lokasi' },
-  { key: 'kompetensi', label: 'Kompetensi' },
+  { key: 'kompetensi', label: 'Bidang Pekerjaan' },
   { key: 'persyaratan', label: 'Persyaratan' },
   { key: 'pendidikan', label: 'Pendidikan', type: 'select' as const, options: ['SD', 'SMP', 'SMA/SMK', 'D3', 'S1'] },
   { key: 'deadline', label: 'Deadline' },
@@ -184,7 +184,7 @@ export default function LowonganKerjaPage() {
                 <th style={thStyle}>Judul</th>
                 <th style={thStyle}>Perusahaan</th>
                 <th style={thStyle}>Lokasi</th>
-                <th style={thStyle}>Kompetensi</th>
+                <th style={thStyle}>Bidang Pekerjaan</th>
                 <th style={thStyle}>Sumber</th>
                 <th style={thStyle}>Deadline</th>
                 {!readOnly && <th style={thStyle}>Aksi</th>}

@@ -1,6 +1,16 @@
 import { useEffect, useState } from 'react';
 import { gasApi } from '../api/gasClient';
 
+function fmtDateTime(v: string): string {
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v;
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  const time = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  return `${dd}-${mm}-${yyyy} ${time}`;
+}
+
 const prioritasStyle: Record<string, React.CSSProperties> = {
   Tinggi: { background: '#dc2626', color: 'white', padding: '2px 10px', borderRadius: 12, fontSize: 12 },
   Sedang: { background: '#d97706', color: 'white', padding: '2px 10px', borderRadius: 12, fontSize: 12 },
@@ -72,7 +82,7 @@ export default function RekomendasiPage() {
         <table style={{ marginTop: 8 }}>
           <thead>
             <tr>
-              <th>Kompetensi</th>
+              <th>Jenis Pekerjaan</th>
               <th>Kecamatan</th>
               <th>Prioritas</th>
               <th>Alasan</th>
@@ -90,7 +100,7 @@ export default function RekomendasiPage() {
                   </span>
                 </td>
                 <td style={{ fontSize: 13 }}>{r.alasan}</td>
-                <td style={{ fontSize: 12 }}>{new Date(r.created_at).toLocaleString('id-ID')}</td>
+                <td style={{ fontSize: 12 }}>{fmtDateTime(r.created_at)}</td>
               </tr>
             ))}
             {filtered.length === 0 && (
