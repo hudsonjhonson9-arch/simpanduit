@@ -82,7 +82,7 @@ export default function RekomendasiPage() {
         <table style={{ marginTop: 8 }}>
           <thead>
             <tr>
-              <th>Bidang Pekerjaan</th>
+              <th>Jenis Pekerjaan</th>
               <th>Kecamatan</th>
               <th>Prioritas</th>
               <th>Alasan</th>

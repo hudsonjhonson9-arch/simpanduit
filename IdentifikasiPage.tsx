@@ -74,7 +74,7 @@ export default function IdentifikasiPage() {
           <table style={{ marginTop: 8 }}>
             <thead>
               <tr>
-                <th>Bidang Pekerjaan</th>
+                <th>Jenis Pekerjaan</th>
                 <th>Kebutuhan DUDI</th>
                 <th>Lowongan KarirHub</th>
                 <th>Minat Masyarakat</th>

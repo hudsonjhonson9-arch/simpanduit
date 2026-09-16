@@ -1,6 +1,16 @@
 import { useState, useRef } from 'react';
 import { gasApi } from '../api/gasClient';
 
+function fmtDate(v?: string): string | undefined {
+  if (!v) return v;
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v;
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+
 interface Lowongan {
   id: string;
   judul: string;
@@ -149,7 +159,7 @@ export default function LowonganDetailModal({ lowongan, onClose }: Props) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 16px', marginBottom: 16 }}>
                 <Detail label="Lokasi" value={lowongan.lokasi} />
                 <Detail label="Pendidikan" value={lowongan.pendidikan} />
-                <Detail label="Deadline" value={lowongan.deadline} />
+                <Detail label="Deadline" value={fmtDate(lowongan.deadline)} />
                 <Detail label="Sumber" value={lowongan.sumber} />
                 <Detail label="Bidang Usaha" value={lowongan.bidang_usaha} />
                 <Detail label="Jenis Pekerjaan" value={lowongan.jenis_pekerjaan} />
