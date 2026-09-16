@@ -8,6 +8,7 @@ export default function DudiPage() {
       fields={[
         { key: 'nama_perusahaan', label: 'Nama Perusahaan' },
         { key: 'bidang_usaha', label: 'Bidang Usaha' },
+        { key: 'jenis_pekerjaan', label: 'Jenis Pekerjaan' },
         { key: 'lokasi', label: 'Lokasi' },
         { key: 'kontak_hrd', label: 'Kontak HRD' },
         { key: 'produk', label: 'Produk' },

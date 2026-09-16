@@ -10,6 +10,7 @@ interface Lowongan {
   perusahaan: string;
   lokasi: string;
   kompetensi: string;
+  jenis_pekerjaan: string;
   persyaratan: string;
   pendidikan: string;
   deadline: string;
@@ -24,6 +25,7 @@ const FIELDS = [
   { key: 'perusahaan', label: 'Perusahaan' },
   { key: 'lokasi', label: 'Lokasi' },
   { key: 'kompetensi', label: 'Bidang Pekerjaan' },
+  { key: 'jenis_pekerjaan', label: 'Jenis Pekerjaan' },
   { key: 'persyaratan', label: 'Persyaratan' },
   { key: 'pendidikan', label: 'Pendidikan', type: 'select' as const, options: ['SD', 'SMP', 'SMA/SMK', 'D3', 'S1'] },
   { key: 'deadline', label: 'Deadline' },
@@ -185,6 +187,7 @@ export default function LowonganKerjaPage() {
                 <th style={thStyle}>Perusahaan</th>
                 <th style={thStyle}>Lokasi</th>
                 <th style={thStyle}>Bidang Pekerjaan</th>
+                <th style={thStyle}>Jenis Pekerjaan</th>
                 <th style={thStyle}>Sumber</th>
                 <th style={thStyle}>Deadline</th>
                 {!readOnly && <th style={thStyle}>Aksi</th>}
@@ -197,6 +200,7 @@ export default function LowonganKerjaPage() {
                   <td style={tdStyle}>{r.perusahaan}</td>
                   <td style={tdStyle}>{r.lokasi}</td>
                   <td style={tdStyle}>{r.kompetensi}</td>
+                  <td style={tdStyle}>{r.jenis_pekerjaan}</td>
                   <td style={tdStyle}>
                     <span style={{
                       padding: '2px 8px', borderRadius: 12, fontSize: '.72rem', fontWeight: 600,
