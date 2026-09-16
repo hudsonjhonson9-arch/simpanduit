@@ -4,6 +4,16 @@ import { useAuth } from '../context/AuthContext';
 import { canWrite } from '../config/permissions';
 import { useToast } from '../components/Toast';
 
+function fmtDate(v: unknown): string {
+  if (typeof v !== 'string' || !v) return '-';
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v;
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+
 interface Lowongan {
   id: string;
   judul: string;
@@ -208,7 +218,7 @@ export default function LowonganKerjaPage() {
                       color: r.sumber === 'DUDI' ? 'var(--primary)' : '#16a34a',
                     }}>{r.sumber}</span>
                   </td>
-                  <td style={tdStyle}>{r.deadline || '-'}</td>
+                  <td style={tdStyle}>{fmtDate(r.deadline)}</td>
                   {!readOnly && (
                     <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
                       <button onClick={() => startEdit(r)} style={actionBtn}>Edit</button>
