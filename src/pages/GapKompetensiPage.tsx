@@ -24,6 +24,8 @@ export default function GapKompetensiPage() {
   const [kecamatanList, setKecamatanList] = useState<string[]>([]);
   const [kecamatan, setKecamatan] = useState('Semua');
   const [results, setResults] = useState<GapRow[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     gasApi.listKecamatan().then(res => {
@@ -31,23 +33,17 @@ export default function GapKompetensiPage() {
     });
   }, []);
 
-  useEffect(() => {
-    gasApi.list('GapKompetensi').then(res => {
-      if (res.success) {
-        const filtered = kecamatan === 'Semua'
-          ? res.data
-          : res.data.filter((r: any) => r.kecamatan === kecamatan);
-        // Deduplicate — keep latest per kelompok
-        const seen = new Map<string, any>();
-        filtered.forEach((r: any) => {
-          if (!seen.has(r.kelompok) || new Date(r.created_at) > new Date(seen.get(r.kelompok).created_at)) {
-            seen.set(r.kelompok, r);
-          }
-        });
-        setResults([...seen.values()].sort((a: any, b: any) => a.peringkat - b.peringkat));
-      }
-    });
-  }, [kecamatan]);
+  async function runAnalysis() {
+    setLoading(true);
+    setError('');
+    const res = await gasApi.analisisKesesuaian(kecamatan);
+    setLoading(false);
+    if (res.success) {
+      setResults(res.data);
+    } else {
+      setError(res.error ?? 'Gagal menjalankan analisis.');
+    }
+  }
 
   return (
     <div className="page">
@@ -65,8 +61,13 @@ export default function GapKompetensiPage() {
             <option value="Semua">Semua Kecamatan</option>
             {kecamatanList.map(k => <option key={k} value={k}>{k}</option>)}
           </select>
+          <button onClick={runAnalysis} disabled={loading}>
+            {loading ? 'Menganalisis...' : 'Jalankan Analisis'}
+          </button>
         </div>
       </div>
+
+      {error && <p style={{ color: 'var(--danger)' }}>{error}</p>}
 
       {results && (
         results.length === 0 ? (
