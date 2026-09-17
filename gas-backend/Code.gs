@@ -22,6 +22,7 @@ const SHEET_SCHEMAS = {
   AKAN: ['id', 'nama_p3mi', 'negara_tujuan', 'jabatan', 'gaji', 'persyaratan', 'dokumen', 'tahapan', 'kontak', 'created_at'],
   KarirHub: ['id', 'judul_lowongan', 'kompetensi', 'perusahaan', 'lokasi', 'bidang_usaha', 'jenis_pekerjaan', 'jumlah_lowongan', 'deadline', 'jenis_kelamin', 'pendidikan', 'pengalaman', 'kondisi_fisik', 'keterampilan', 'sumber', 'created_at'],
   RekomendasiPelatihan: ['id', 'kompetensi', 'kecamatan', 'jumlah_dudi_butuh', 'jumlah_lowongan', 'jumlah_minat', 'skor_total', 'prioritas', 'alasan', 'created_at'],
+  GapKompetensi: ['id', 'peringkat', 'kelompok', 'kuota', 'minat', 'minat_persen', 'jumlah_sesuai', 'jumlah_belum_sesuai', 'persentase', 'gap_kompetensi', 'prioritas', 'kecamatan', 'created_at'],
   Lamaran: ['id', 'lowongan_id', 'sumber', 'nama_lengkap', 'email', 'telepon', 'pendidikan', 'pengalaman', 'cv_filename', 'cv_drive_id', 'status', 'created_at'],
   InfoPelatihan: ['id', 'judul', 'deskripsi', 'kompetensi', 'lokasi', 'jadwal', 'penyelenggara', 'kontak', 'target_peserta', 'kuota', 'status', 'created_at'],
   PendaftaranPelatihan: ['id', 'pelatihan_id', 'pelatihan_judul', 'nama_lengkap', 'email', 'telepon', 'pendidikan', 'pekerjaan', 'status', 'created_at']
