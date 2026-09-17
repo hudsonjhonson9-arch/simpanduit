@@ -255,6 +255,7 @@ function createRecord(module, data) {
   const id = Utilities.getUuid();
   const record = Object.assign({}, data, { id: id, created_at: new Date().toISOString() });
   appendRow(module, record);
+  if (SOURCE_SHEETS.includes(module)) autoAnalisis();
   return { success: true, id: id, data: record };
 }
 
@@ -284,6 +285,7 @@ function updateRecord(module, id, data) {
           sheet.getRange(i + 1, colIdx + 1).setValue(data[h]);
         }
       });
+      if (SOURCE_SHEETS.includes(module)) autoAnalisis();
       return { success: true, id: id };
     }
   }
@@ -300,6 +302,7 @@ function deleteRecord(module, id) {
   for (let i = 1; i < values.length; i++) {
     if (values[i][idCol] === id) {
       sheet.deleteRow(i + 1);
+      if (SOURCE_SHEETS.includes(module)) autoAnalisis();
       return { success: true };
     }
   }
@@ -996,6 +999,45 @@ function appendRow(module, record) {
 function jsonResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ---------- AUTO-TRIGGER: analisis otomatis saat data berubah ----------
+
+const SOURCE_SHEETS = ['DUDI', 'KarirHub', 'PencariKerja'];
+
+function onSpreadsheetChange(e) {
+  const sheetName = e && e.source ? e.source.getActiveSheet().getName() : '';
+  if (!SOURCE_SHEETS.includes(sheetName)) return;
+  autoAnalisis();
+}
+
+function autoAnalisis() {
+  const kecamatanList = (function() {
+    const pk = getSheetData('PencariKerja');
+    const set = {};
+    pk.forEach(p => { if (p.kecamatan) set[p.kecamatan] = true; });
+    return Object.keys(set);
+  })();
+
+  // Run for 'Semua' + each kecamatan
+  const all = ['Semua', ...kecamatanList];
+  all.forEach(k => {
+    try { identifikasiKebutuhan(k); } catch (err) {}
+    try { analisisKesesuaian(k); } catch (err) {}
+  });
+}
+
+function setupAutoTrigger() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  // Hapus trigger lama
+  ScriptApp.getProjectTriggers().forEach(t => {
+    if (t.getHandlerFunction() === 'onSpreadsheetChange') ScriptApp.deleteTrigger(t);
+  });
+  // Pasang trigger baru
+  ScriptApp.newTrigger('onSpreadsheetChange')
+    .forSpreadsheet(ss)
+    .onChange()
+    .create();
 }
 
 /**
