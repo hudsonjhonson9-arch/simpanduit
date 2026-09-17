@@ -23,7 +23,6 @@ export default function IdentifikasiPage() {
   const [kecamatan, setKecamatan] = useState('Semua');
   const [results, setResults] = useState<ResultRow[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     gasApi.listKecamatan().then(res => {
@@ -31,19 +30,18 @@ export default function IdentifikasiPage() {
     });
   }, []);
 
-  async function runAnalysis() {
+  useEffect(() => {
     setLoading(true);
-    setError('');
-    const res = await gasApi.identifikasiKebutuhan(kecamatan);
-    setLoading(false);
-    if (res.success) {
-      setResults(res.data);
-    } else {
-      setError(res.error ?? 'Gagal menjalankan analisis.');
-    }
-  }
-
-  useEffect(() => { runAnalysis(); }, [kecamatan]);
+    gasApi.list('RekomendasiPelatihan').then(res => {
+      setLoading(false);
+      if (res.success) {
+        const filtered = kecamatan === 'Semua'
+          ? res.data
+          : res.data.filter((r: any) => r.kecamatan === kecamatan);
+        setResults(filtered);
+      }
+    });
+  }, [kecamatan]);
 
   return (
     <div className="page">
@@ -61,13 +59,8 @@ export default function IdentifikasiPage() {
             <option value="Semua">Semua Kecamatan</option>
             {kecamatanList.map(k => <option key={k} value={k}>{k}</option>)}
           </select>
-          <button onClick={runAnalysis} disabled={loading}>
-            {loading ? 'Menganalisis...' : 'Jalankan Analisis'}
-          </button>
         </div>
       </div>
-
-      {error && <p style={{ color: 'var(--danger)' }}>{error}</p>}
 
       {results && (
         results.length === 0 ? (

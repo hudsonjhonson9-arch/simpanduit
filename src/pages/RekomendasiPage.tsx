@@ -25,11 +25,7 @@ export default function RekomendasiPage() {
 
   async function load() {
     setLoading(true);
-    let res = await gasApi.list('RekomendasiPelatihan');
-    if (res.success && res.data.length === 0) {
-      await gasApi.identifikasiKebutuhan();
-      res = await gasApi.list('RekomendasiPelatihan');
-    }
+    const res = await gasApi.list('RekomendasiPelatihan');
     if (res.success) {
       const seen = new Map<string, any>();
       res.data.forEach((r: any) => {

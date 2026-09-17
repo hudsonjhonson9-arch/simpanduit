@@ -708,6 +708,14 @@ function analisisKesesuaian(kecamatan) {
 
   results.forEach((r, i) => r.peringkat = i + 1);
 
+  // Simpan snapshot ke sheet GapKompetensi
+  results.forEach(r => {
+    appendRow('GapKompetensi', Object.assign({}, r, {
+      id: Utilities.getUuid(),
+      created_at: new Date().toISOString()
+    }));
+  });
+
   return { success: true, kecamatan: kecamatan || 'Semua', data: results };
 }
 
