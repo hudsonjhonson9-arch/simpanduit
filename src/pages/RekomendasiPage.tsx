@@ -25,9 +25,12 @@ export default function RekomendasiPage() {
 
   async function load() {
     setLoading(true);
-    const res = await gasApi.list('RekomendasiPelatihan');
+    let res = await gasApi.list('RekomendasiPelatihan');
+    if (res.success && res.data.length === 0) {
+      await gasApi.identifikasiKebutuhan();
+      res = await gasApi.list('RekomendasiPelatihan');
+    }
     if (res.success) {
-      // Deduplicate by kompetensi+kecamatan — keep latest
       const seen = new Map<string, any>();
       res.data.forEach((r: any) => {
         const key = `${r.kompetensi}|${r.kecamatan}`;
