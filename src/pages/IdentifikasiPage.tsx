@@ -22,7 +22,6 @@ export default function IdentifikasiPage() {
   const [kecamatanList, setKecamatanList] = useState<string[]>([]);
   const [kecamatan, setKecamatan] = useState('Semua');
   const [results, setResults] = useState<ResultRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     gasApi.listKecamatan().then(res => {
@@ -31,9 +30,7 @@ export default function IdentifikasiPage() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
     gasApi.list('RekomendasiPelatihan').then(res => {
-      setLoading(false);
       if (res.success) {
         const filtered = kecamatan === 'Semua'
           ? res.data

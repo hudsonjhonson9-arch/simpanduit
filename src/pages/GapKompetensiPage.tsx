@@ -24,7 +24,6 @@ export default function GapKompetensiPage() {
   const [kecamatanList, setKecamatanList] = useState<string[]>([]);
   const [kecamatan, setKecamatan] = useState('Semua');
   const [results, setResults] = useState<GapRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     gasApi.listKecamatan().then(res => {
@@ -33,9 +32,7 @@ export default function GapKompetensiPage() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
     gasApi.list('GapKompetensi').then(res => {
-      setLoading(false);
       if (res.success) {
         const filtered = kecamatan === 'Semua'
           ? res.data
