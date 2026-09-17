@@ -4,15 +4,6 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { gasApi, type Module } from '../api/gasClient';
 
-function fmtDate(v: unknown): string {
-  if (typeof v !== 'string' || !v) return '';
-  const d = new Date(v);
-  if (isNaN(d.getTime())) return v;
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  return `${dd}-${mm}-${d.getFullYear()}`;
-}
-
 interface ReportDef {
   module: Module;
   title: string;
@@ -105,7 +96,7 @@ export default function LaporanPage() {
       autoTable(doc, {
         startY: 26,
         head: [report.columns.map(c => c.label)],
-        body: data.map(row => report.columns.map(c => fmtDate(row[c.key]))),
+        body: data.map(row => report.columns.map(c => String(row[c.key] ?? ''))),
         styles: { fontSize: 8 },
         headStyles: { fillColor: [30, 41, 59] }
       });
@@ -124,7 +115,7 @@ export default function LaporanPage() {
       const data = await fetchData(report);
       const rows = data.map(row => {
         const obj: Record<string, any> = {};
-        report.columns.forEach(c => { obj[c.label] = fmtDate(row[c.key]); });
+        report.columns.forEach(c => { obj[c.label] = row[c.key] ?? ''; });
         return obj;
       });
       const worksheet = XLSX.utils.json_to_sheet(rows);

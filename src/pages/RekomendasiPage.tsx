@@ -25,12 +25,7 @@ export default function RekomendasiPage() {
 
   async function load() {
     setLoading(true);
-    let res = await gasApi.list('RekomendasiPelatihan');
-    // ponytail: auto-generate dulu agar halaman tak pernah kosong padahal data sumber ada
-    if (res.success && res.data.length === 0) {
-      await gasApi.identifikasiKebutuhan();
-      res = await gasApi.list('RekomendasiPelatihan');
-    }
+    const res = await gasApi.list('RekomendasiPelatihan');
     if (res.success) {
       // Deduplicate by kompetensi+kecamatan — keep latest
       const seen = new Map<string, any>();

@@ -45,8 +45,6 @@ export default function GapKompetensiPage() {
     }
   }
 
-  useEffect(() => { runAnalysis(); }, [kecamatan]);
-
   return (
     <div className="page">
       <h2>Analisis Kesesuaian Kebutuhan Industri & Kompetensi Masyarakat</h2>

@@ -254,31 +254,8 @@ function createRecord(module, data) {
   if (!data) return { success: false, error: 'Data kosong.' };
   const id = Utilities.getUuid();
   const record = Object.assign({}, data, { id: id, created_at: new Date().toISOString() });
-  normalizeDateFields(module, record);
   appendRow(module, record);
   return { success: true, id: id, data: record };
-}
-
-// Kolom berformat tanggal per modul — nilainya dinormalisasi ke dd-mm-yyyy saat tulis.
-const DATE_COLUMNS = {
-  KarirHub: ['deadline'],
-  InfoPelatihan: ['jadwal'],
-  AKAD: ['jadwal_rekrutmen']
-};
-
-function normalizeDateFields(module, record) {
-  const cols = DATE_COLUMNS[module] || [];
-  cols.forEach(col => {
-    if (record[col] !== undefined && record[col] !== '' && record[col] !== '-') {
-      const d = new Date(record[col]);
-      if (!isNaN(d.getTime())) {
-        const dd = String(d.getDate()).padStart(2, '0');
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        record[col] = `${dd}-${mm}-${d.getFullYear()}`;
-      }
-    }
-  });
-  return record;
 }
 
 function readRecords(module, filters) {
@@ -299,7 +276,6 @@ function updateRecord(module, id, data) {
   const values = sheet.getDataRange().getValues();
   const headers = values[0];
   const idCol = headers.indexOf('id');
-  normalizeDateFields(module, data);
 
   for (let i = 1; i < values.length; i++) {
     if (values[i][idCol] === id) {
@@ -417,9 +393,12 @@ function identifikasiKebutuhanPelatihan(kecamatan) {
     };
   }).sort((a, b) => b.skor_total - a.skor_total);
 
-  // Simpan snapshot hasil analisis ke sheet RekomendasiPelatihan (upsert per kompetensi|kecamatan)
-  upsertSnapshotRows('RekomendasiPelatihan', results, function(r) {
-    return [r.kecamatan || 'Semua', r.kompetensi];
+  // Simpan snapshot hasil analisis ke sheet RekomendasiPelatihan
+  results.forEach(r => {
+    appendRow('RekomendasiPelatihan', Object.assign({}, r, {
+      id: Utilities.getUuid(),
+      created_at: new Date().toISOString()
+    }));
   });
 
   return { success: true, kecamatan: kecamatan || 'Semua', data: results };
@@ -1005,38 +984,6 @@ function appendRow(module, record) {
   const row = sheetHeaders.map(h => record[h] !== undefined ? record[h] : '');
   sheet.appendRow(row);
 }
-
-/**
- * Hapus baris lama yang punya kombinasi kolom sama (mis. kecamatan|kompetensi)
- * lalu tambahkan baris baru — agar snapshot tidak menumpuk duplikat.
- * keyOf(row) mengembalikan array nilai pembeda; jika hasilnya sama salah satu baris lama, lama dihapus.
- */
-function upsertSnapshotRows(module, results, keyOf) {
-  results.forEach(r => {
-    const sheet = getSheet(module);
-    const values = sheet.getDataRange().getValues();
-    if (values.length > 1) {
-      const headers = values[0];
-      const idx = {};
-      headers.forEach((h, i) => idx[h] = i);
-      const key = keyOf(r);
-      for (let i = values.length - 1; i >= 1; i--) {
-        const rowKey = key.map(k => keyOfId(values[i][idx[k]]));
-        if (key.join('|') === rowKey.join('|')) {
-          sheet.deleteRow(i + 1);
-        }
-      }
-    }
-  });
-  results.forEach(r => {
-    appendRow(module, Object.assign({}, r, {
-      id: Utilities.getUuid(),
-      created_at: new Date().toISOString()
-    }));
-  });
-}
-
-function keyOfId(v) { return v === undefined || v === null ? 'Semua' : String(v).trim(); }
 
 function jsonResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
