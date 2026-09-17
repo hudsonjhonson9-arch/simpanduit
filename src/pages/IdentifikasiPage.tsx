@@ -43,6 +43,8 @@ export default function IdentifikasiPage() {
     }
   }
 
+  useEffect(() => { runAnalysis(); }, [kecamatan]);
+
   return (
     <div className="page">
       <h2>Identifikasi Kebutuhan Pelatihan</h2>
