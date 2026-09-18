@@ -375,8 +375,8 @@ function identifikasiKebutuhanPelatihan(kecamatan) {
     const skorTotal = (skorDudi * BOBOT_DUDI) + (skorLowongan * BOBOT_LOWONGAN) + (skorMinat * BOBOT_MINAT);
 
     let prioritas;
-    if (skorTotal >= 0.66) prioritas = 'Tinggi';
-    else if (skorTotal >= 0.33) prioritas = 'Sedang';
+    if (skorTotal >= 0.3) prioritas = 'Tinggi';
+    else if (skorTotal >= 0.2) prioritas = 'Sedang';
     else prioritas = 'Rendah';
 
     const alasanParts = [];
@@ -833,8 +833,8 @@ function rekomendasiPublik() {
     const skorTotal = (skorDudi * BOBOT_DUDI) + (skorLowongan * BOBOT_LOWONGAN) + (skorMinat * BOBOT_MINAT);
 
     let prioritas;
-    if (skorTotal >= 0.66) prioritas = 'Tinggi';
-    else if (skorTotal >= 0.33) prioritas = 'Sedang';
+    if (skorTotal >= 0.3) prioritas = 'Tinggi';
+    else if (skorTotal >= 0.2) prioritas = 'Sedang';
     else prioritas = 'Rendah';
 
     return {
